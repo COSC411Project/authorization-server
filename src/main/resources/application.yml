@@ -1,0 +1,36 @@
+server:
+  port: 9000
+
+spring:
+  profiles:
+    active: dev
+    
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+      
+  flyway:
+    enabled: true
+    
+  datasource:
+    url: jdbc:mysql://${MYSQL_AUTH_HOST}/${AUTH_DATABASE}
+    username: ${MYSQL_AUTH_USERNAME}
+    password: ${MYSQL_AUTH_PASSWORD}
+      
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+      
+  flyway:
+    enabled: true
+      
+  datasource:
+    url: jdbc:mysql://${MYSQL_AUTH_HOST_TEST}/${AUTH_DATABASE}
+    username: ${MYSQL_AUTH_USERNAME}
+    password: ${MYSQL_AUTH_PASSWORD}
