@@ -1,9 +1,11 @@
 package app.entities;
 
-import java.util.List;
+import java.util.Objects;
 
 import app.enums.Role;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,8 +19,21 @@ public class User {
 	private String email;
 	private String password;
 	private boolean enabled;
-	private List<Role> roles;
 	
+	@Enumerated(value=EnumType.STRING)
+	private Role role;
+	
+	public User() {
+	}
+
+	public User(String email, String password, boolean enabled, Role role) {
+		super();
+		this.email = email;
+		this.password = password;
+		this.enabled = enabled;
+		this.role = role;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -51,12 +66,30 @@ public class User {
 		this.enabled = enabled;
 	}
 
-	public List<Role> getRoles() {
-		return roles;
+	public Role getRole() {
+		return role;
 	}
 
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(email, enabled, id, password, role);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		return Objects.equals(email, other.email) && enabled == other.enabled && id == other.id
+				&& Objects.equals(password, other.password) && role == other.role;
 	}
 
 }
