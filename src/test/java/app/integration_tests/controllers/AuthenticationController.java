@@ -51,6 +51,29 @@ public class AuthenticationController {
 		clientRepository.deleteAll();
 	}
 	
+	@Test
+	public void authorize_notLoggedIn_failure() throws Exception {
+		String uri = String.format("/oauth2/authorize?client_id=%s&response_type=code", client.getIdentifier());
+		mockMvc.perform(get(uri))
+			   .andExpect(status().is3xxRedirection())
+			   .andExpect(header().string("Location", containsString("http://localhost/login")));
+	}
+	
+	@WithMockUser
+	@Test
+	public void authorize_noParams_failure() throws Exception {
+		mockMvc.perform(get("/oauth2/authorize"))
+			   .andExpect(status().is4xxClientError());
+	}
+	
+	@WithMockUser
+	@Test
+	public void authorize_noResponseType_failure() throws Exception {
+		String uri = String.format("/oauth2/authorize?client_id=%s", client.getIdentifier());
+		mockMvc.perform(get(uri))
+			   .andExpect(status().is4xxClientError());
+	}
+	
 	@WithMockUser
 	@Test
 	public void authorize_defaultRedirectUri_success() throws Exception {
@@ -70,4 +93,5 @@ public class AuthenticationController {
 		   .andExpect(status().is3xxRedirection())
 		   .andExpect(header().string("Location", containsString(redirectUri + "?code=")));
 	}
+	
 }
