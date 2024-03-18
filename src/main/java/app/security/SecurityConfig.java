@@ -15,6 +15,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import app.enums.Role;
 import app.repositories.IUserRepository;
+import app.security.user.CustomUserDetailsManager;
+import app.security.user.UserAuthenticationProvider;
 
 @Configuration
 public class SecurityConfig {

@@ -1,4 +1,4 @@
-package app.security;
+package app.security.user;
 
 import java.util.Collection;
 import java.util.List;

@@ -1,5 +1,6 @@
 package app.entities;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Client {
@@ -38,16 +40,25 @@ public class Client {
 	@Column(name="scope")
 	private Set<Scope> scopes;
 	
+	@ElementCollection(targetClass=String.class, fetch=FetchType.EAGER)
+	@CollectionTable(name="client_redirect_uri")
+	@Column(name="redirect_uri")
+	private Set<String> redirectUris;
+	
+	@OneToMany(mappedBy="client")
+	private List<AuthorizationCode> codes;
+	
 	public Client() {	
 	}
 	
-	public Client(String identifier, String secret, boolean requiresConsent, Set<GrantType> grantTypes, Set<Scope> scopes) {
+	public Client(String identifier, String secret, boolean requiresConsent, Set<GrantType> grantTypes, Set<Scope> scopes, Set<String> redirectUris) {
 		super();
 		this.identifier = identifier;
 		this.secret = secret;
 		this.requiresConsent = requiresConsent;
 		this.grantTypes = grantTypes;
 		this.scopes = scopes;
+		this.redirectUris = redirectUris;
 	}
 
 	public int getId() {
@@ -74,7 +85,7 @@ public class Client {
 		this.secret = secret;
 	}
 	
-	public boolean isRequiresConsent() {
+	public boolean requiresConsent() {
 		return requiresConsent;
 	}
 	
@@ -98,9 +109,26 @@ public class Client {
 		this.scopes = scopes;
 	}
 
+	public Set<String> getRedirectUris() {
+		return redirectUris;
+	}
+
+	public void setRedirectUris(Set<String> redirectUris) {
+		this.redirectUris = redirectUris;
+	}
+
+	public List<AuthorizationCode> getCodes() {
+		return codes;
+	}
+
+	public void setCodes(List<AuthorizationCode> codes) {
+		this.codes = codes;
+	}
+
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(grantTypes, id, identifier, requiresConsent, scopes, secret);
+		return Objects.hash(grantTypes, id, identifier, redirectUris, requiresConsent, scopes, secret);
 	}
 
 	@Override
@@ -112,9 +140,10 @@ public class Client {
 		if (getClass() != obj.getClass())
 			return false;
 		Client other = (Client) obj;
-		return grantTypes.equals(other.grantTypes) && id == other.id
-				&& Objects.equals(identifier, other.identifier) && requiresConsent == other.requiresConsent
-				&& scopes.equals(other.scopes) && Objects.equals(secret, other.secret);
+		return Objects.equals(grantTypes, other.grantTypes) && id == other.id
+				&& Objects.equals(identifier, other.identifier) && Objects.equals(redirectUris, other.redirectUris)
+				&& requiresConsent == other.requiresConsent && Objects.equals(scopes, other.scopes)
+				&& Objects.equals(secret, other.secret);
 	}
 	
 }

@@ -26,3 +26,10 @@ create table client_scope (
 	scope varchar(25) NOT NULL,
 	FOREIGN KEY (client_id) REFERENCES client(id)
 );
+
+create table client_redirect_uri (
+	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    client_id INTEGER NOT NULL,
+    redirect_uri varchar(50) NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES client(id)
+);

@@ -3,7 +3,7 @@ package app.integration_tests.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -14,40 +14,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import app.entities.AuthorizationCode;
 import app.entities.Client;
 import app.enums.GrantType;
 import app.enums.Scope;
+import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest
-public class ClientRepositoryTests {
+public class AuthorizationCodeRepositoryTests {
 
 	@Autowired
-	private IClientRepository clientRepository; 
+	private IClientRepository clientRepository;
+	
+	@Autowired
+	private IAuthorizationCodeRepository authorizationCodeRepository;
 	
 	@AfterEach
 	public void cleanup() {
+		authorizationCodeRepository.deleteAll();
 		clientRepository.deleteAll();
 	}
 	
 	@Test
 	public void save_success() {
 		// Arrange
-		Client client = new Client("client", 
+		String redirectUri = "http://localhost:5173/";
+		Client client = new Client("identifier", 
 								   "secret", 
 								   false, 
 								   Set.of(GrantType.AUTHORIZATION_CODE), 
-								   Set.of(Scope.READ),
-								   Set.of("http://localhost:5173/"));
+								   Set.of(Scope.READ), 
+								   Set.of(redirectUri));
+		
+		AuthorizationCode code = new AuthorizationCode("code", redirectUri, LocalDate.now(), client);
 		
 		// Act
-		clientRepository.save(client);
+		authorizationCodeRepository.save(code);
 		
 		// Assert
-		Optional<Client> savedClient = clientRepository.findById(client.getId());
-		
-		assertTrue(savedClient.isPresent());
-		assertEquals(client, savedClient.get());
+		Optional<AuthorizationCode> savedCode = authorizationCodeRepository.findById(code.getId());
+		assertTrue(savedCode.isPresent());
+		assertEquals(code, savedCode.get());
 	}
 }
