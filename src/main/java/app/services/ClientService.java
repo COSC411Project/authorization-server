@@ -1,6 +1,6 @@
 package app.services;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ public class ClientService implements IClientService {
 	public String generateAuthorizationCode(String clientId, String redirectUri) {
 		String code = UUID.randomUUID().toString();
 		Client client = clientRepository.findByIdentifier(clientId).get();
-		AuthorizationCode authorizationCode = new AuthorizationCode(code, redirectUri, LocalDate.now(), client);
+		AuthorizationCode authorizationCode = new AuthorizationCode(code, redirectUri, LocalDateTime.now(), client);
 		
 		authorizationCodeRepository.save(authorizationCode);
 		

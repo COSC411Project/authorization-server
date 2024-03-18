@@ -1,6 +1,8 @@
 package app.entities;
 
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import jakarta.persistence.CascadeType;
@@ -19,7 +21,7 @@ public class AuthorizationCode {
 	private int id;
 	private String code;
 	private String redirectUri;
-	private LocalDate datetimeIssued;
+	private LocalDateTime datetimeIssued;
 	
 	@ManyToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="client_id")
@@ -28,7 +30,7 @@ public class AuthorizationCode {
 	public AuthorizationCode() {
 	}
 
-	public AuthorizationCode(String code, String redirectUri, LocalDate datetimeIssued, Client client) {
+	public AuthorizationCode(String code, String redirectUri, LocalDateTime datetimeIssued, Client client) {
 		super();
 		this.code = code;
 		this.redirectUri = redirectUri;
@@ -60,11 +62,11 @@ public class AuthorizationCode {
 		this.redirectUri = redirectUri;
 	}
 
-	public LocalDate getDatetimeIssued() {
+	public LocalDateTime getDatetimeIssued() {
 		return datetimeIssued;
 	}
 
-	public void setDatetimeIssued(LocalDate datetimeIssued) {
+	public void setDatetimeIssued(LocalDateTime datetimeIssued) {
 		this.datetimeIssued = datetimeIssued;
 	}
 
@@ -90,8 +92,10 @@ public class AuthorizationCode {
 		if (getClass() != obj.getClass())
 			return false;
 		AuthorizationCode other = (AuthorizationCode) obj;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		return client.getId() == other.client.getId() && Objects.equals(code, other.code)
-				&& Objects.equals(datetimeIssued, other.datetimeIssued) && id == other.id
+				&& Objects.equals(datetimeIssued.format(formatter), other.datetimeIssued.format(formatter)) 
+				&& id == other.id
 				&& Objects.equals(redirectUri, other.redirectUri);
 	}
 	

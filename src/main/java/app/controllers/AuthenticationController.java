@@ -67,14 +67,15 @@ public class AuthenticationController {
 		headers.add("Location", redirectUri);
 			
 		return new ResponseEntity<>(headers, HttpStatus.FOUND);
+		//return "redirect:" + redirectUri;
 	}
 
 	private String addParameters(String redirectUri, String code, String state) {
 		if (state != null) {
-			return "redirect:" + redirectUri + "?code=" + code + "&state=" + state;
+			return redirectUri + "?code=" + code + "&state=" + state;
 		}
 		
-		return "redirect:" + redirectUri + "?code=" + code;
+		return redirectUri + "?code=" + code;
 	}
 
 	public boolean isValidAuthorizationRequest(SecurityClient securityClient, ResponseType responseType, Scope scope, String redirectUri) {

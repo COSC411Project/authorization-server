@@ -1,6 +1,6 @@
 package app.security.client;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,7 +38,7 @@ public class CustomClientDetailsManager implements IClientDetailsManager {
 		String code = UUID.randomUUID().toString();
 		Optional<Client> client = clientRepository.findByIdentifier(clientId);
 		
-		AuthorizationCode authorizationCode = new AuthorizationCode(code, redirectUri, LocalDate.now(), client.get());
+		AuthorizationCode authorizationCode = new AuthorizationCode(code, redirectUri, LocalDateTime.now(), client.get());
 		authorizationCodeRepository.save(authorizationCode);
 		
 		return code;

@@ -3,8 +3,7 @@ package app.integration_tests.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -48,7 +47,7 @@ public class AuthorizationCodeRepositoryTests {
 								   Set.of(Scope.READ), 
 								   Set.of(redirectUri));
 		
-		AuthorizationCode code = new AuthorizationCode("code", redirectUri, LocalDate.now(), client);
+		AuthorizationCode code = new AuthorizationCode("code", redirectUri, LocalDateTime.now(), client);
 		
 		// Act
 		authorizationCodeRepository.save(code);
