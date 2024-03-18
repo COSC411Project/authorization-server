@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import app.entities.Client;
 import app.enums.GrantType;
 import app.enums.Scope;
+import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 
 @ActiveProfiles("test")
@@ -33,6 +34,9 @@ public class AuthenticationController {
 	@Autowired
 	IClientRepository clientRepository;
 	
+	@Autowired
+	IAuthorizationCodeRepository authorizationCodeRepository;
+	
 	private Client client;
 	
 	@BeforeEach
@@ -43,16 +47,27 @@ public class AuthenticationController {
 	
 	@AfterEach
 	public void cleanup() {
+		authorizationCodeRepository.deleteAll();
 		clientRepository.deleteAll();
 	}
 	
 	@WithMockUser
 	@Test
-	public void authorize_success() throws Exception {
+	public void authorize_defaultRedirectUri_success() throws Exception {
 		String uri = String.format("/oauth2/authorize?client_id=%s&response_type=code", client.getIdentifier());
 		String redirectUri = client.getRedirectUris().iterator().next();
 		mockMvc.perform(get(uri))
 			   .andExpect(status().is3xxRedirection())
 			   .andExpect(header().string("Location", containsString(redirectUri + "?code=")));
+	}
+
+	@WithMockUser
+	@Test
+	public void authorize_matchingRedirectUri_success() throws Exception {
+		String redirectUri = client.getRedirectUris().iterator().next();
+		String uri = String.format("/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=%s", client.getIdentifier(), redirectUri);
+		mockMvc.perform(get(uri))
+		   .andExpect(status().is3xxRedirection())
+		   .andExpect(header().string("Location", containsString(redirectUri + "?code=")));
 	}
 }

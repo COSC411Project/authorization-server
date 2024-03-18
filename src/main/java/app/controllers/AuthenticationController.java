@@ -67,7 +67,6 @@ public class AuthenticationController {
 		headers.add("Location", redirectUri);
 			
 		return new ResponseEntity<>(headers, HttpStatus.FOUND);
-		//return "redirect:" + redirectUri;
 	}
 
 	private String addParameters(String redirectUri, String code, String state) {

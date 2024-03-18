@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Ignore initialization scripts ###
-*.sql
+initialize.sql

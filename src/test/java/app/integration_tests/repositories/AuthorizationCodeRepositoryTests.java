@@ -19,6 +19,7 @@ import app.enums.GrantType;
 import app.enums.Scope;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
+import app.utils.TimeUtils;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -47,7 +48,8 @@ public class AuthorizationCodeRepositoryTests {
 								   Set.of(Scope.READ), 
 								   Set.of(redirectUri));
 		
-		AuthorizationCode code = new AuthorizationCode("code", redirectUri, LocalDateTime.now(), client);
+		LocalDateTime datetime = TimeUtils.now();
+		AuthorizationCode code = new AuthorizationCode("code", redirectUri, datetime, client);
 		
 		// Act
 		authorizationCodeRepository.save(code);

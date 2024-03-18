@@ -98,5 +98,11 @@ public class AuthorizationCode {
 				&& id == other.id
 				&& Objects.equals(redirectUri, other.redirectUri);
 	}
+
+	@Override
+	public String toString() {
+		return "AuthorizationCode [id=" + id + ", code=" + code + ", redirectUri=" + redirectUri + ", datetimeIssued="
+				+ datetimeIssued + ", client=" + client + "]";
+	}
 	
 }
