@@ -4,5 +4,6 @@ create table authorization_code (
 	code varchar(100) NOT NULL,
 	redirect_uri varchar(100) NOT NULL,
 	datetime_issued datetime NOT NULL,
+	used boolean NOT NULL,
 	FOREIGN KEY (client_id) references client(id)
 )

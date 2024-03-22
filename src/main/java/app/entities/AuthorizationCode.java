@@ -22,6 +22,7 @@ public class AuthorizationCode {
 	private String code;
 	private String redirectUri;
 	private LocalDateTime datetimeIssued;
+	private boolean used;
 	
 	@ManyToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="client_id")
@@ -68,6 +69,14 @@ public class AuthorizationCode {
 
 	public void setDatetimeIssued(LocalDateTime datetimeIssued) {
 		this.datetimeIssued = datetimeIssued;
+	}
+
+	public boolean isUsed() {
+		return used;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
 	}
 
 	public Client getClient() {
