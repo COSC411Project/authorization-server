@@ -41,7 +41,12 @@ public class ClientService implements IClientService {
 
 	@Override
 	public boolean isValidAuthorizationCode(String clientId, String clientSecret, String redirectUri) {
-		Optional<AuthorizationCode> latestCode = authorizationCodeRepository.findByClientIdAndRedirectUri(clientId, redirectUri)
+		Optional<Client> client = clientRepository.findByIdentifier(clientId);
+		if (!client.isPresent()) {
+			return false;
+		}
+		
+		Optional<AuthorizationCode> latestCode = authorizationCodeRepository.findByClientIdAndRedirectUri(client.get().getId(), redirectUri)
 																			.stream()
 																			.max((c1, c2) -> c1.getDatetimeIssued().compareTo(c2.getDatetimeIssued()));
 		if (!latestCode.isPresent() || !passwordEncoder.matches(clientSecret, latestCode.get().getCode())) {

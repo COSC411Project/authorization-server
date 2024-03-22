@@ -8,6 +8,6 @@ import app.entities.AuthorizationCode;
 
 public interface IAuthorizationCodeRepository extends ListCrudRepository<AuthorizationCode, Integer> {
 
-	List<AuthorizationCode> findByClientIdAndRedirectUri(String clientId, String redirectUri);
+	List<AuthorizationCode> findByClientIdAndRedirectUri(int clientId, String redirectUri);
 	
 }
