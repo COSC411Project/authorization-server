@@ -4,7 +4,6 @@ import app.exceptions.ClientNotFoundException;
 
 public interface IClientDetailsManager {
 
-	SecurityClient getClient(String clientIdentifier) throws ClientNotFoundException;
-	String generateAuthorizationCode(String clientId, String redirectUri);
+	SecurityClient getClient(String identifier) throws ClientNotFoundException;
 	
 }
