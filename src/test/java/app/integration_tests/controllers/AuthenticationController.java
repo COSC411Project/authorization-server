@@ -68,6 +68,14 @@ public class AuthenticationController {
 	
 	@WithMockUser
 	@Test
+	public void authorize_duplicateParameters_failure() throws Exception  {
+		String uri = String.format("/oauth2/authorize?client_id=%s&response_type=code&client_id=sean", client.getIdentifier());
+		mockMvc.perform(get(uri))
+			   .andExpect(status().is4xxClientError());
+	}
+	
+	@WithMockUser
+	@Test
 	public void authorize_noResponseType_failure() throws Exception {
 		String uri = String.format("/oauth2/authorize?client_id=%s", client.getIdentifier());
 		mockMvc.perform(get(uri))

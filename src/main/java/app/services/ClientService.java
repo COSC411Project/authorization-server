@@ -1,8 +1,11 @@
 package app.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import app.entities.AuthorizationCode;
@@ -16,10 +19,12 @@ public class ClientService implements IClientService {
 
 	private final IClientRepository clientRepository;
 	private final IAuthorizationCodeRepository authorizationCodeRepository;
+	private final PasswordEncoder passwordEncoder;
 	
-	public ClientService(IClientRepository clientRepository, IAuthorizationCodeRepository authorizationCodeRepository) {
+	public ClientService(IClientRepository clientRepository, IAuthorizationCodeRepository authorizationCodeRepository, PasswordEncoder passwordEncoder) {
 		this.clientRepository = clientRepository;
 		this.authorizationCodeRepository = authorizationCodeRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	@Override
@@ -34,4 +39,17 @@ public class ClientService implements IClientService {
 		return code;
 	}
 
+	@Override
+	public boolean isValidAuthorizationCode(String clientId, String clientSecret, String redirectUri) {
+		Optional<AuthorizationCode> latestCode = authorizationCodeRepository.findByClientIdAndRedirectUri(clientId, redirectUri)
+																			.stream()
+																			.max((c1, c2) -> c1.getDatetimeIssued().compareTo(c2.getDatetimeIssued()));
+		if (!latestCode.isPresent() || !passwordEncoder.matches(clientSecret, latestCode.get().getCode())) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	
 }
