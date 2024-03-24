@@ -48,6 +48,9 @@ public class Client {
 	@OneToMany(mappedBy="client")
 	private List<AuthorizationCode> codes;
 	
+	@OneToMany(mappedBy="client")
+	private List<Token> tokens;
+	
 	public Client() {	
 	}
 	
@@ -125,6 +128,17 @@ public class Client {
 		this.codes = codes;
 	}
 
+	public List<Token> getTokens() {
+		return tokens;
+	}
+
+	public void setTokens(List<Token> tokens) {
+		this.tokens = tokens;
+	}
+
+	public boolean isRequiresConsent() {
+		return requiresConsent;
+	}
 
 	@Override
 	public int hashCode() {

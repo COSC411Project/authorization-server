@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class AuthorizationCode {
@@ -27,6 +28,9 @@ public class AuthorizationCode {
 	@ManyToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="client_id")
 	private Client client;
+	
+	@OneToOne(mappedBy="authorizationCode")
+	private Token token;
 	
 	public AuthorizationCode() {
 	}
@@ -85,6 +89,14 @@ public class AuthorizationCode {
 
 	public void setClient(Client client) {
 		this.client = client;
+	}
+
+	public Token getToken() {
+		return token;
+	}
+
+	public void setToken(Token token) {
+		this.token = token;
 	}
 
 	@Override
