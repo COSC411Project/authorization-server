@@ -19,4 +19,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorDTO> handleClassNotFoundException() {
 		return new ResponseEntity<>(new ErrorDTO("invalid_request"),HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<Object> handleUnauthorizedException() {
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
 }

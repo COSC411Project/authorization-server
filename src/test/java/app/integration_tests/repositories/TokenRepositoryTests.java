@@ -29,7 +29,7 @@ import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 import app.repositories.ITokenRepository;
 import app.utils.JwtUtil;
-import app.utils.TimeUtils;
+import app.utils.TimeUtil;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -58,7 +58,7 @@ public class TokenRepositoryTests {
 								   Set.of(Scope.READ), 
 								   Set.of(redirectUri));
 		
-		LocalDateTime datetime = TimeUtils.now();
+		LocalDateTime datetime = TimeUtil.now();
 		authorizationCode = new AuthorizationCode("code", redirectUri, datetime, client);
 		
 		KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
@@ -68,7 +68,7 @@ public class TokenRepositoryTests {
 		
 		String jwt = JwtUtil.generate((RSAKey) keyPair.getPrivate(), 0, List.of("READ"));
 
-		token = new Token(jwt, TimeUtils.now(), true);
+		token = new Token(jwt, TimeUtil.now(), true);
 		token.setClient(client);
 		token.setAuthorizationCode(authorizationCode);
 	}

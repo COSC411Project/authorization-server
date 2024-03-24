@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
-import org.springframework.stereotype.Component;
 
 import app.entities.User;
 import app.exceptions.EmailNotFoundException;
@@ -26,7 +25,7 @@ public class CustomUserDetailsManager implements UserDetailsManager {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return null;
+		throw new UsernameNotFoundException(username);
 	}
 	
 	public UserDetails loadUserByEmail(String email) throws EmailNotFoundException {
@@ -59,7 +58,9 @@ public class CustomUserDetailsManager implements UserDetailsManager {
 	public void changePassword(String oldPassword, String newPassword) {
 		SecurityContext context = SecurityContextHolder.getContext();
 		SecurityUser securityUser = (SecurityUser) context.getAuthentication().getPrincipal();
-		if (!passwordEncoder.matches(oldPassword, securityUser.getPassword())) return;
+		if (!passwordEncoder.matches(oldPassword, securityUser.getPassword())) {
+			throw new IllegalArgumentException();
+		}
 		
 		User user = securityUser.getUser();
 		user.setPassword(newPassword);

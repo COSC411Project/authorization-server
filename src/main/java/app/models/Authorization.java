@@ -1,11 +1,12 @@
-package app.dtos;
+package app.models;
 
-public class AuthorizationDTO {
+public class Authorization {
 
 	private String clientId;
 	private String clientSecret;
 	
-	public AuthorizationDTO(String clientId, String clientSecret) {
+	public Authorization(String clientId, String clientSecret) {
+		super();
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 	}

@@ -13,6 +13,5 @@ public class ProjectConfig implements WebMvcConfigurer {
 		registry.addConverter(new GrantTypeConverter());
 		registry.addConverter(new ResponseTypeConverter());
 		registry.addConverter(new ScopeConverter());
-		registry.addConverter(new AuthorizationDTOConverter());
 	}
 }

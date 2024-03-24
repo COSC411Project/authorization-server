@@ -35,6 +35,14 @@ public class AuthorizationCode {
 	public AuthorizationCode() {
 	}
 
+	public AuthorizationCode(int id, String code, LocalDateTime datetimeIssued, boolean used) {
+		super();
+		this.id = id;
+		this.code = code;
+		this.datetimeIssued = datetimeIssued;
+		this.used = used;
+	}
+
 	public AuthorizationCode(String code, String redirectUri, LocalDateTime datetimeIssued, Client client) {
 		super();
 		this.code = code;

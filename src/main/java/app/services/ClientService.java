@@ -12,7 +12,8 @@ import app.entities.Client;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 import app.repositories.ITokenRepository;
-import app.utils.TimeUtils;
+import app.utils.TimeUtil;
+import jakarta.transaction.Transactional;
 
 @Component
 public class ClientService implements IClientService {
@@ -33,10 +34,11 @@ public class ClientService implements IClientService {
 	}
 	
 	@Override
+	@Transactional
 	public String generateAuthorizationCode(String clientId, String redirectUri) {
 		String code = UUID.randomUUID().toString();
 		Client client = clientRepository.findByIdentifier(clientId).get();
-		LocalDateTime datetime = TimeUtils.now();
+		LocalDateTime datetime = TimeUtil.now();
 		
 		AuthorizationCode authorizationCode = new AuthorizationCode(code, redirectUri, datetime, client);
 		authorizationCodeRepository.save(authorizationCode);
@@ -63,16 +65,17 @@ public class ClientService implements IClientService {
 			return false;
 		} else if (latestCode.get().isUsed()) {
 			tokenRepository.invalidateToken(latestCode.get().getId());
+			return false;
 		} else if (!latestCode.get().getCode().equals(code)) {
 			savedCode = authorizationCodeRepository.findByCode(code);
 			
 			if (savedCode.isPresent()) {
 				tokenRepository.invalidateToken(savedCode.get().getId());
 			}
+			return false;
 		}
 		
 		return true;
 	}
 
-	
 }

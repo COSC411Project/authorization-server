@@ -12,17 +12,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.dtos.AuthorizationDTO;
 import app.dtos.TokenDTO;
 import app.enums.GrantType;
 import app.enums.ResponseType;
 import app.enums.Scope;
 import app.exceptions.ClientNotFoundException;
 import app.exceptions.InvalidRequestException;
+import app.exceptions.UnauthorizedException;
+import app.models.Authorization;
 import app.security.client.IClientDetailsManager;
 import app.security.client.SecurityClient;
 import app.services.IClientService;
-import app.utils.JwtUtil;
+import app.utils.AuthorizationUtil;
 
 @RestController
 @RequestMapping("/oauth2")
@@ -89,13 +90,13 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping("/token")
-	public ResponseEntity<TokenDTO> token(@RequestHeader("Authorization") AuthorizationDTO authorization,
+	public ResponseEntity<TokenDTO> token(@RequestHeader("Authorization") String authorizationHeader,
 										  @RequestParam(name = "grant_type") GrantType grantType,
 										  @RequestParam String code,
 										  @RequestParam(required=false) Scope scope,
 										  @RequestParam(required = false, name = "redirect_uri") String redirectUri,
-										  Authentication authentication) throws ClientNotFoundException, InvalidRequestException {
-		if (!isValidTokenRequest(authorization, grantType, code, scope, redirectUri)) {
+										  Authentication authentication) throws ClientNotFoundException, InvalidRequestException, UnauthorizedException {
+		if (!isValidTokenRequest(authorizationHeader, grantType, code, scope, redirectUri)) {
 			throw new InvalidRequestException();
 		}
 		
@@ -105,7 +106,13 @@ public class AuthenticationController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	private boolean isValidTokenRequest(AuthorizationDTO authorization, GrantType grantType, String code, Scope scope, String redirectUri) throws ClientNotFoundException {
+	private boolean isValidTokenRequest(String authorizationHeader, 
+										GrantType grantType, 
+										String code, 
+										Scope scope, 
+										String redirectUri) throws ClientNotFoundException, UnauthorizedException {
+		Authorization authorization = AuthorizationUtil.parseHeader(authorizationHeader);
+		
 		SecurityClient securityClient = clientDetailsManager.getClient(authorization.getClientId());
 		if (!securityClient.supportsGrantType(grantType) || 
 			(grantType == GrantType.AUTHORIZATION_CODE && code == null) ||
@@ -126,4 +133,5 @@ public class AuthenticationController {
 		
 		return true;
 	}
+	
 }

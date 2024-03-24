@@ -2,7 +2,7 @@ package app.utils;
 
 import java.time.LocalDateTime;
 
-public class TimeUtils {
+public class TimeUtil {
 
 	public static LocalDateTime now() {
 		LocalDateTime datetime = LocalDateTime.now();

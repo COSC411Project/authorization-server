@@ -10,7 +10,7 @@ public class GrantTypeConverter implements Converter<String, GrantType> {
 	public GrantType convert(String source) {
 		source = source.toLowerCase();
 		for (GrantType grantType : GrantType.values()) {
-			if (source == grantType.toString().toLowerCase()) {
+			if (source.equals(grantType.toString().toLowerCase())) {
 				return grantType;
 			}
 		}
