@@ -1,7 +1,6 @@
 package app.services;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,6 +11,7 @@ import app.entities.AuthorizationCode;
 import app.entities.Client;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
+import app.repositories.ITokenRepository;
 import app.utils.TimeUtils;
 
 @Component
@@ -20,11 +20,16 @@ public class ClientService implements IClientService {
 	private final IClientRepository clientRepository;
 	private final IAuthorizationCodeRepository authorizationCodeRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final ITokenRepository tokenRepository;
 	
-	public ClientService(IClientRepository clientRepository, IAuthorizationCodeRepository authorizationCodeRepository, PasswordEncoder passwordEncoder) {
+	public ClientService(IClientRepository clientRepository, 
+						 IAuthorizationCodeRepository authorizationCodeRepository, 
+						 PasswordEncoder passwordEncoder,
+						 ITokenRepository tokenRepository) {
 		this.clientRepository = clientRepository;
 		this.authorizationCodeRepository = authorizationCodeRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.tokenRepository = tokenRepository;
 	}
 	
 	@Override
@@ -40,17 +45,30 @@ public class ClientService implements IClientService {
 	}
 
 	@Override
-	public boolean isValidAuthorizationCode(String clientId, String clientSecret, String redirectUri) {
+	public boolean isValidAuthorizationCode(String code, String clientId, String clientSecret, String redirectUri) {
+		Optional<AuthorizationCode> savedCode = authorizationCodeRepository.findByCode(code);
+		if (!savedCode.isPresent()) {
+			return false;
+		}
+		
 		Optional<Client> client = clientRepository.findByIdentifier(clientId);
-		if (!client.isPresent()) {
+		if (!client.isPresent() || !passwordEncoder.matches(clientSecret, client.get().getSecret())) {
 			return false;
 		}
 		
 		Optional<AuthorizationCode> latestCode = authorizationCodeRepository.findByClientIdAndRedirectUri(client.get().getId(), redirectUri)
 																			.stream()
 																			.max((c1, c2) -> c1.getDatetimeIssued().compareTo(c2.getDatetimeIssued()));
-		if (!latestCode.isPresent() || !passwordEncoder.matches(clientSecret, latestCode.get().getCode())) {
+		if (!latestCode.isPresent()) {
 			return false;
+		} else if (latestCode.get().isUsed()) {
+			tokenRepository.invalidateToken(latestCode.get().getId());
+		} else if (!latestCode.get().getCode().equals(code)) {
+			savedCode = authorizationCodeRepository.findByCode(code);
+			
+			if (savedCode.isPresent()) {
+				tokenRepository.invalidateToken(savedCode.get().getId());
+			}
 		}
 		
 		return true;

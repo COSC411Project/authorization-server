@@ -2,6 +2,7 @@ package app.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.converters.GrantTypeConverter;
-import app.converters.ResponseTypeConverter;
-import app.converters.ScopeConverter;
 import app.dtos.AuthorizationDTO;
 import app.dtos.TokenDTO;
 import app.enums.GrantType;
@@ -24,6 +22,7 @@ import app.exceptions.InvalidRequestException;
 import app.security.client.IClientDetailsManager;
 import app.security.client.SecurityClient;
 import app.services.IClientService;
+import app.utils.JwtUtil;
 
 @RestController
 @RequestMapping("/oauth2")
@@ -92,30 +91,35 @@ public class AuthenticationController {
 	@PostMapping("/token")
 	public ResponseEntity<TokenDTO> token(@RequestHeader("Authorization") AuthorizationDTO authorization,
 										  @RequestParam(name = "grant_type") GrantType grantType,
+										  @RequestParam String code,
 										  @RequestParam(required=false) Scope scope,
-										  @RequestParam(required = false, name = "redirect_uri") String redirectUri) throws ClientNotFoundException, InvalidRequestException {
-		if (!isValidTokenRequest(authorization, grantType, scope, redirectUri) ||
-			!clientService.isValidAuthorizationCode(authorization.getClientId(), authorization.getClientSecret(), redirectUri)) {
+										  @RequestParam(required = false, name = "redirect_uri") String redirectUri,
+										  Authentication authentication) throws ClientNotFoundException, InvalidRequestException {
+		if (!isValidTokenRequest(authorization, grantType, code, scope, redirectUri)) {
 			throw new InvalidRequestException();
 		}
 		
+		int userId = (int) authentication.getPrincipal();
 		
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	private boolean isValidTokenRequest(AuthorizationDTO authorization, GrantType grantType, Scope scope, String redirectUri) throws ClientNotFoundException {
+	private boolean isValidTokenRequest(AuthorizationDTO authorization, GrantType grantType, String code, Scope scope, String redirectUri) throws ClientNotFoundException {
 		SecurityClient securityClient = clientDetailsManager.getClient(authorization.getClientId());
 		if (!securityClient.supportsGrantType(grantType) || 
-		   (scope != null && !securityClient.supportsScope(scope))) {
+			(grantType == GrantType.AUTHORIZATION_CODE && code == null) ||
+		    (scope != null && !securityClient.supportsScope(scope))) {
 			return false;
 		}
+		
+		if (code == null) return true;
 		
 		if (redirectUri == null) {
 			redirectUri = securityClient.getRedirectUri();
 		}
 		
-		boolean isValidAuthorizationCode = clientService.isValidAuthorizationCode(authorization.getClientId(), authorization.getClientSecret(), redirectUri);
+		boolean isValidAuthorizationCode = clientService.isValidAuthorizationCode(code, authorization.getClientId(), authorization.getClientSecret(), redirectUri);
 		if (!isValidAuthorizationCode) {
 			return false;
 		}

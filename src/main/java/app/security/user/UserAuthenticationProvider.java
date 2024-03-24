@@ -1,4 +1,4 @@
-package app.security.user;
+ package app.security.user;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,7 +26,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
 			SecurityUser securityUser = (SecurityUser) userDetailsManager.loadUserByEmail(email);
 			
 			if (passwordEncoder.matches(securityUser.getPassword(), (String) authentication.getCredentials())) {
-				return new UsernamePasswordAuthenticationToken(email, securityUser.getPassword(), securityUser.getAuthorities());
+				return new UsernamePasswordAuthenticationToken(securityUser.getUser().getId(), securityUser.getPassword(), securityUser.getAuthorities());
 			}
 		} catch (Exception ex) {
 		}
