@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,15 +33,10 @@ public class AuthorizationCodeRepositoryTests {
 	@Autowired
 	private IAuthorizationCodeRepository authorizationCodeRepository;
 	
-	@AfterEach
-	public void cleanup() {
-		authorizationCodeRepository.deleteAll();
-		clientRepository.deleteAll();
-	}
+	private AuthorizationCode code;
 	
-	@Test
-	public void save_success() {
-		// Arrange
+	@BeforeEach
+	public void setup() {
 		String redirectUri = "http://localhost:5173/";
 		Client client = new Client("identifier", 
 								   "secret", 
@@ -49,8 +46,17 @@ public class AuthorizationCodeRepositoryTests {
 								   Set.of(redirectUri));
 		
 		LocalDateTime datetime = TimeUtils.now();
-		AuthorizationCode code = new AuthorizationCode("code", redirectUri, datetime, client);
-		
+		code = new AuthorizationCode("code", redirectUri, datetime, client);
+	}
+	
+	@AfterEach
+	public void cleanup() {
+		authorizationCodeRepository.deleteAll();
+		clientRepository.deleteAll();
+	}
+	
+	@Test
+	public void save_success() {
 		// Act
 		authorizationCodeRepository.save(code);
 		
@@ -58,5 +64,29 @@ public class AuthorizationCodeRepositoryTests {
 		Optional<AuthorizationCode> savedCode = authorizationCodeRepository.findById(code.getId());
 		assertTrue(savedCode.isPresent());
 		assertEquals(code, savedCode.get());
+	}
+	
+	@Test
+	public void findByCode_success() {
+		// Arrange
+		authorizationCodeRepository.save(code);
+		
+		// Act
+		Optional<AuthorizationCode> savedCode = authorizationCodeRepository.findByCode(code.getCode());
+		
+		// Assert
+		assertTrue(savedCode.isPresent());
+	}
+	
+	@Test
+	public void findByClientIdAndRedirectUri() {
+		// Arrange
+		authorizationCodeRepository.save(code);
+		
+		// Act
+		List<AuthorizationCode> savedCodes = authorizationCodeRepository.findByClientIdAndRedirectUri(code.getClient().getId(), code.getRedirectUri());
+		
+		// Assert
+		assertEquals(1, savedCodes.size());
 	}
 }

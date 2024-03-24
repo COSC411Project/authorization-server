@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,18 @@ public class ClientRepositoryTests {
 	@Autowired
 	private IClientRepository clientRepository; 
 	
+	private Client client;
+	
+	@BeforeEach
+	public void setup() {
+		client = new Client("client", 
+						   "secret", 
+						   false, 
+						   Set.of(GrantType.AUTHORIZATION_CODE), 
+						   Set.of(Scope.READ),
+						   Set.of("http://localhost:5173/"));
+	}
+	
 	@AfterEach
 	public void cleanup() {
 		clientRepository.deleteAll();
@@ -33,14 +46,6 @@ public class ClientRepositoryTests {
 	
 	@Test
 	public void save_success() {
-		// Arrange
-		Client client = new Client("client", 
-								   "secret", 
-								   false, 
-								   Set.of(GrantType.AUTHORIZATION_CODE), 
-								   Set.of(Scope.READ),
-								   Set.of("http://localhost:5173/"));
-		
 		// Act
 		clientRepository.save(client);
 		
@@ -49,5 +54,17 @@ public class ClientRepositoryTests {
 		
 		assertTrue(savedClient.isPresent());
 		assertEquals(client, savedClient.get());
+	}
+	
+	@Test
+	public void findByIdentifier_success() {
+		// Arrange
+		clientRepository.save(client);
+		
+		// Act
+		Optional<Client> savedClient = clientRepository.findByIdentifier(client.getIdentifier());
+		
+		// Assert
+		assertTrue(savedClient.isPresent());
 	}
 }
