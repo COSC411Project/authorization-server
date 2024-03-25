@@ -106,7 +106,7 @@ public class AuthenticationController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	private boolean isValidTokenRequest(String authorizationHeader, 
+	public boolean isValidTokenRequest(String authorizationHeader, 
 										GrantType grantType, 
 										String code, 
 										Scope scope, 
@@ -115,7 +115,7 @@ public class AuthenticationController {
 		
 		SecurityClient securityClient = clientDetailsManager.getClient(authorization.getClientId());
 		if (!securityClient.supportsGrantType(grantType) || 
-			(grantType == GrantType.AUTHORIZATION_CODE && code == null) ||
+			(grantType == GrantType.AUTHORIZATION_CODE && (code == null || code.isBlank())) ||
 		    (scope != null && !securityClient.supportsScope(scope))) {
 			return false;
 		}

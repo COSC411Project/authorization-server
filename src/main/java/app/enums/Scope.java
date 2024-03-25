@@ -2,6 +2,7 @@ package app.enums;
 
 public enum Scope {
 
-	READ
+	READ,
+	READ_WRITE
 	
 }

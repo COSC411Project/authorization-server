@@ -54,6 +54,13 @@ public class Client {
 	public Client() {	
 	}
 	
+	public Client(Set<GrantType> grantTypes, Set<Scope> scopes, Set<String> redirectUris) {
+		super();
+		this.grantTypes = grantTypes;
+		this.scopes = scopes;
+		this.redirectUris = redirectUris;
+	}
+
 	public Client(String identifier, String secret, boolean requiresConsent, Set<GrantType> grantTypes, Set<Scope> scopes, Set<String> redirectUris) {
 		super();
 		this.identifier = identifier;
