@@ -4,11 +4,15 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import app.dtos.TokenDTO;
 import app.entities.AuthorizationCode;
 import app.entities.Client;
+import app.enums.Scope;
+import app.models.Authorization;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 import app.repositories.ITokenRepository;
@@ -76,6 +80,13 @@ public class ClientService implements IClientService {
 		}
 		
 		return true;
+	}
+
+	@Override
+	public TokenDTO generateToken(Authentication authentication, String clientId, Scope scope) {
+		
+		
+		return null;
 	}
 
 }

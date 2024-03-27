@@ -96,23 +96,22 @@ public class AuthenticationController {
 										  @RequestParam(required=false) Scope scope,
 										  @RequestParam(required = false, name = "redirect_uri") String redirectUri,
 										  Authentication authentication) throws ClientNotFoundException, InvalidRequestException, UnauthorizedException {
-		if (!isValidTokenRequest(authorizationHeader, grantType, code, scope, redirectUri)) {
+		Authorization authorization = AuthorizationUtil.parseHeader(authorizationHeader);
+		
+		if (!isValidTokenRequest(authorization, grantType, code, scope, redirectUri)) {
 			throw new InvalidRequestException();
 		}
 		
-		int userId = (int) authentication.getPrincipal();
+		TokenDTO token = clientService.generateToken(authentication, code, scope);
 		
-		
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(token, HttpStatus.OK);
 	}
 
-	public boolean isValidTokenRequest(String authorizationHeader, 
-										GrantType grantType, 
-										String code, 
-										Scope scope, 
-										String redirectUri) throws ClientNotFoundException, UnauthorizedException {
-		Authorization authorization = AuthorizationUtil.parseHeader(authorizationHeader);
-		
+	public boolean isValidTokenRequest(Authorization authorization, 
+									   GrantType grantType, 
+									   String code, 
+									   Scope scope, 
+									   String redirectUri) throws ClientNotFoundException, UnauthorizedException {
 		SecurityClient securityClient = clientDetailsManager.getClient(authorization.getClientId());
 		if (!securityClient.supportsGrantType(grantType) || 
 			(grantType == GrantType.AUTHORIZATION_CODE && (code == null || code.isBlank())) ||
