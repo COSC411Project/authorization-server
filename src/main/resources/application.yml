@@ -19,6 +19,10 @@ spring:
     url: jdbc:mysql://${MYSQL_AUTH_HOST}/${AUTH_DATABASE}
     username: ${MYSQL_AUTH_USERNAME}
     password: ${MYSQL_AUTH_PASSWORD}
+    
+rsa:
+  private-key:
+    path: ~/keys/authorization-server/private.key
       
 ---
 
@@ -34,3 +38,7 @@ spring:
     url: jdbc:mysql://${MYSQL_AUTH_HOST_TEST}/${AUTH_DATABASE}
     username: ${MYSQL_AUTH_USERNAME}
     password: ${MYSQL_AUTH_PASSWORD}
+    
+rsa:
+  private-key:
+    path: ./src/test/java/app/keys/private.key

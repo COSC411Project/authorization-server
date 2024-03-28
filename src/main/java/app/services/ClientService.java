@@ -1,6 +1,8 @@
 package app.services;
 
+import java.security.interfaces.RSAKey;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,10 +14,13 @@ import app.dtos.TokenDTO;
 import app.entities.AuthorizationCode;
 import app.entities.Client;
 import app.enums.Scope;
-import app.models.Authorization;
+import app.exceptions.KeyNotFoundException;
+import app.models.JwtOptions;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 import app.repositories.ITokenRepository;
+import app.utils.JWTUtil;
+import app.utils.RSAUtil;
 import app.utils.TimeUtil;
 import jakarta.transaction.Transactional;
 
@@ -26,15 +31,18 @@ public class ClientService implements IClientService {
 	private final IAuthorizationCodeRepository authorizationCodeRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final ITokenRepository tokenRepository;
+	private final RSAUtil rsaUtil;
 	
 	public ClientService(IClientRepository clientRepository, 
 						 IAuthorizationCodeRepository authorizationCodeRepository, 
 						 PasswordEncoder passwordEncoder,
-						 ITokenRepository tokenRepository) {
+						 ITokenRepository tokenRepository, 
+						 RSAUtil rsaUtil) {
 		this.clientRepository = clientRepository;
 		this.authorizationCodeRepository = authorizationCodeRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.tokenRepository = tokenRepository;
+		this.rsaUtil = rsaUtil;
 	}
 	
 	@Override
@@ -83,10 +91,25 @@ public class ClientService implements IClientService {
 	}
 
 	@Override
-	public TokenDTO generateToken(Authentication authentication, String clientId, Scope scope) {
+	public TokenDTO generateToken(Authentication authentication, String clientId, Scope scope) throws KeyNotFoundException {
+		RSAKey privateKey = rsaUtil.getPrivateKey();
+		if (privateKey == null) {
+			throw new KeyNotFoundException();
+		}
 		
+		int userId = (int) authentication.getPrincipal();
+		List<String> authorities = authentication.getAuthorities()
+												 .stream()
+												 .map(authority -> authority.getAuthority())
+												 .toList();
 		
-		return null;
+		int secondsTillExpiration = 30 * 60;
+		JwtOptions options = new JwtOptions(privateKey, userId, authorities, clientId, scope, secondsTillExpiration);
+		
+		String token = JWTUtil.generate(options);
+		String refreshToken = null;
+		
+		return new TokenDTO(token, "Bearer", secondsTillExpiration, scope, refreshToken);
 	}
 
 }

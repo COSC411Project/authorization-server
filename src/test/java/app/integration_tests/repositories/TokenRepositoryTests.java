@@ -25,10 +25,11 @@ import app.entities.Client;
 import app.entities.Token;
 import app.enums.GrantType;
 import app.enums.Scope;
+import app.models.JwtOptions;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 import app.repositories.ITokenRepository;
-import app.utils.JwtUtil;
+import app.utils.JWTUtil;
 import app.utils.TimeUtil;
 
 @ActiveProfiles("test")
@@ -65,8 +66,10 @@ public class TokenRepositoryTests {
 		generator.initialize(2048);
 		
 		KeyPair keyPair = generator.generateKeyPair();
+		RSAKey privateKey = (RSAKey) keyPair.getPrivate();
 		
-		String jwt = JwtUtil.generate((RSAKey) keyPair.getPrivate(), 0, List.of("READ"));
+		JwtOptions options = new JwtOptions(privateKey, 1, List.of("READ"), "client", null, 30 * 60);
+		String jwt = JWTUtil.generate(options);
 
 		token = new Token(jwt, TimeUtil.now(), true);
 		token.setClient(client);

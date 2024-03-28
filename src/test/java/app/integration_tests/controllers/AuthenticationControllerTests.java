@@ -1,32 +1,50 @@
 package app.integration_tests.controllers;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import app.entities.Client;
+import app.entities.User;
 import app.enums.GrantType;
+import app.enums.Role;
 import app.enums.Scope;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
+import app.services.ClientService;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @SpringBootTest
-public class AuthenticationController {
+public class AuthenticationControllerTests {
 
 	@Autowired
 	MockMvc mockMvc;
@@ -37,18 +55,41 @@ public class AuthenticationController {
 	@Autowired
 	IAuthorizationCodeRepository authorizationCodeRepository;
 	
+	@Autowired
+	ClientService clientService;
+	
+	@Value("${rsa.private-key.path}")
+	private String privateKeyPath;
+	
 	private Client client;
+	private String code;
 	
 	@BeforeEach
-	public void setup() {
+	public void setup() throws NoSuchAlgorithmException {
 		client = new Client("client", "secret", false, Set.of(GrantType.AUTHORIZATION_CODE), Set.of(Scope.READ), Set.of("http://localhost:5173"));
 		clientRepository.save(client);
+		
+		code = clientService.generateAuthorizationCode(client.getIdentifier(), client.getRedirectUris().iterator().next());
+	
+		KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+		generator.initialize(2048);
+		
+		KeyPair keyPair = generator.generateKeyPair();
+		write(privateKeyPath, keyPair.getPrivate());
+	}
+	
+	private static void write(String path, Key key) {
+		try (FileOutputStream outputStream = new FileOutputStream(path)) {
+			outputStream.write(key.getEncoded());
+		} catch (Exception e) {
+		}
 	}
 	
 	@AfterEach
 	public void cleanup() {
 		authorizationCodeRepository.deleteAll();
 		clientRepository.deleteAll();
+		new File(privateKeyPath).delete();
 	}
 	
 	@Test
@@ -102,4 +143,17 @@ public class AuthenticationController {
 		   .andExpect(header().string("Location", containsString(redirectUri + "?code=")));
 	}
 	
+	@WithMockUser
+	@Test
+	public void token_success() throws Exception {
+		String clientCredentials = client.getIdentifier() + ":" + client.getSecret();
+		String authorization = Base64.getEncoder().encodeToString(clientCredentials.getBytes());
+		String uri = String.format("/oauth2/token?grant_type=authorization_code&code=%s", code);
+		
+		var authentication = new UsernamePasswordAuthenticationToken(1, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+		
+		mockMvc.perform(post(uri).header("Authorization", "Basic " + authorization)
+								 .with(authentication(authentication)))
+			   .andExpect(status().is2xxSuccessful());
+	}
 }

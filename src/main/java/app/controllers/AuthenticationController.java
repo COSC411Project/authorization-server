@@ -18,6 +18,7 @@ import app.enums.ResponseType;
 import app.enums.Scope;
 import app.exceptions.ClientNotFoundException;
 import app.exceptions.InvalidRequestException;
+import app.exceptions.KeyNotFoundException;
 import app.exceptions.UnauthorizedException;
 import app.models.Authorization;
 import app.security.client.IClientDetailsManager;
@@ -95,7 +96,7 @@ public class AuthenticationController {
 										  @RequestParam String code,
 										  @RequestParam(required=false) Scope scope,
 										  @RequestParam(required = false, name = "redirect_uri") String redirectUri,
-										  Authentication authentication) throws ClientNotFoundException, InvalidRequestException, UnauthorizedException {
+										  Authentication authentication) throws ClientNotFoundException, InvalidRequestException, UnauthorizedException, KeyNotFoundException {
 		Authorization authorization = AuthorizationUtil.parseHeader(authorizationHeader);
 		
 		if (!isValidTokenRequest(authorization, grantType, code, scope, redirectUri)) {

@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "rsa.private-key.path",
+  "type": "java.lang.String",
+  "description": "The path to your private key (for JWT signing)"
+}]}

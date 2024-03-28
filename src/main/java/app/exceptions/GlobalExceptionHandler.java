@@ -24,4 +24,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<Object> handleUnauthorizedException() {
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
+	
+	@ExceptionHandler(KeyNotFoundException.class)
+	public ResponseEntity<Object> handleKeyNotFoundException() {
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }

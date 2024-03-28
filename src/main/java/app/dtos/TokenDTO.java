@@ -10,6 +10,15 @@ public class TokenDTO {
 	private Scope scope;
 	private String refreshToken;
 	
+	public TokenDTO(String accessToken, String tokenType, int expiresIn, Scope scope, String refreshToken) {
+		super();
+		this.accessToken = accessToken;
+		this.tokenType = tokenType;
+		this.expiresIn = expiresIn;
+		this.scope = scope;
+		this.refreshToken = refreshToken;
+	}
+
 	public String getAccessToken() {
 		return accessToken;
 	}
