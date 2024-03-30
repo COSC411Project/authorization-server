@@ -34,29 +34,7 @@ const ClientRegistration = () => {
     const handleScopeChange = (event) => {
         setScope(event.target.value);
     }
-
-    const handleRedirectUriChange = useCallback((event) => {
-        const target = event.target;
-        const uuid = target.getAttribute("data-key");
-        const index = redirectUris.findIndex(redirectUri => redirectUri.key === uuid);
-        const clone = redirectUris[index].clone();
-        clone.value = target.value;
-
-        setRedirectUris(prevRedirectUris => prevRedirectUris.toSpliced(index, 1, clone));
-    }, [redirectUris]);
-
-    const handleRedirectUriButtonClick = (event) => {
-        event.preventDefault();
-
-        const target = event.target;
-        const index = target.getAttribute("data-index");
-        if (target.value === "+") {
-            setRedirectUris(prevRedirectUris => prevRedirectUris.concat([new RedirectUri(v4(), "")]));
-        } else {
-            setRedirectUris(prevRedirectUris => prevRedirectUris.toSpliced(index, 1));
-        }
-    }
-
+    
     const handleRegister = async (event) => {
         event.preventDefault();
         
@@ -147,25 +125,11 @@ const ClientRegistration = () => {
 
                 <div className={style.redirectUris}>
                     <label>Redirect Uri(s):</label>
-
-                    <ul>
-                        {redirectUris.map((redirectUri, index) => (
-                            <li key={redirectUri.key}>
-                                <input 
-                                    type="text" 
-                                    data-key={redirectUri.key}
-                                    value={redirectUri.value}
-                                    onChange={handleRedirectUriChange}
-                                />
-
-                                <button value={index === redirectUris.length - 1 ? "+" : "-"} 
-                                        onClick={handleRedirectUriButtonClick} 
-                                        data-key={redirectUri.key}>
-                                    {index === redirectUris.length - 1 ? "+" : "-"}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    <ModifiableInputList 
+                        items={redirectUris}
+                        setter={setRedirectUris}
+                        Model={RedirectUri}
+                    />
                 </div>
 
                 <div className={style.register}>
@@ -173,6 +137,51 @@ const ClientRegistration = () => {
                 </div>
             </form>
         </section>
+    )
+}
+
+const ModifiableInputList = ({items, setter, Model}) => {
+    const handleChange = useCallback((event) => {
+        const target = event.target;
+        const uuid = target.getAttribute("data-key");
+        const index = items.findIndex(item => item.key === uuid);
+        const clone = items[index].clone();
+        clone.value = target.value;
+
+        setter(prevItems => prevItems.toSpliced(index, 1, clone));
+    }, [items]);
+
+    const handleButtonClick = (event) => {
+        event.preventDefault();
+
+        const target = event.target;
+        const index = target.getAttribute("data-index");
+        if (target.value === "+") {
+            setter(prevItems => prevItems.concat([new Model(v4(), "")]));
+        } else {
+            setter(prevItems => prevItems.toSpliced(index, 1));
+        }
+    }
+
+    return (
+        <ul>
+            {items.map((item, index) => (
+                <li key={item.key}>
+                    <input 
+                        type="text" 
+                        data-key={item.key}
+                        value={item.value}
+                        onChange={handleChange}
+                    />
+
+                    <button value={index === items.length - 1 ? "+" : "-"} 
+                            onClick={handleButtonClick} 
+                            data-key={item.key}>
+                        {index === items.length - 1 ? "+" : "-"}
+                    </button>
+                </li>
+            ))}
+        </ul>
     )
 }
 
