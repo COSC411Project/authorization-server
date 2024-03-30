@@ -1,0 +1,17 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    height: 3rem;
+}
+
+.container ul {
+    list-style: none;
+    display: flex;
+    gap: 3rem;
+}
+
+.container a {
+    text-decoration: none;
+    color: black;
+}

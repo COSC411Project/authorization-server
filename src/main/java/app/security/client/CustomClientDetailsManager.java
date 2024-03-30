@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import app.entities.Client;
 import app.exceptions.ClientNotFoundException;
-import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 
 @Component

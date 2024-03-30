@@ -7,13 +7,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import app.enums.Role;
 import app.repositories.IUserRepository;
 import app.security.user.CustomUserDetailsManager;
 import app.security.user.UserAuthenticationProvider;
@@ -60,7 +58,9 @@ public class SecurityConfig {
 			customizer.disable();
 		}).formLogin((customizer) -> {
 		}).authorizeHttpRequests((customizer) -> {
-			customizer.anyRequest().hasRole("USER");
+			customizer.requestMatchers("/login").permitAll();
+			customizer.requestMatchers("/api/**").hasRole("DEV");
+			customizer.anyRequest().hasAnyRole("USER", "DEV");
 		}).build();
 	}
 }

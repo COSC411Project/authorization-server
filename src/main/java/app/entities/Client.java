@@ -24,6 +24,7 @@ public class Client {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	private String applicationName;
 	private String identifier;
 	private String secret;
 	private boolean requiresConsent;
@@ -79,6 +80,14 @@ public class Client {
 		this.id = id;
 	}
 	
+	public String getApplicationName() {
+		return applicationName;
+	}
+
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
+	}
+
 	public String getIdentifier() {
 		return identifier;
 	}

@@ -22,7 +22,7 @@ spring:
     
 rsa:
   private-key:
-    path: ~/keys/authorization-server/private.key
+    path: keys/authorization-server/private.key
       
 ---
 

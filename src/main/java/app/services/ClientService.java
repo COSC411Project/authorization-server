@@ -2,14 +2,19 @@ package app.services;
 
 import java.security.interfaces.RSAKey;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import app.dtos.ClientDTO;
+import app.dtos.ClientRegistrationDTO;
 import app.dtos.TokenDTO;
 import app.entities.AuthorizationCode;
 import app.entities.Client;
@@ -112,4 +117,36 @@ public class ClientService implements IClientService {
 		return new TokenDTO(token, "Bearer", secondsTillExpiration, scope, refreshToken);
 	}
 
+	@Override
+	public ClientDTO register(ClientRegistrationDTO clientRegistration) {
+		Client client = map(clientRegistration);
+		
+		String secret = UUID.randomUUID().toString();
+		
+		client.setSecret(passwordEncoder.encode(secret));
+		Client savedClient = clientRepository.save(client);
+		
+		return map(savedClient, secret);
+	}
+	
+	public Client map(ClientRegistrationDTO clientRegistration) {
+		String identifier = UUID.randomUUID().toString();
+		return new Client(identifier, 
+						  null, 
+					      clientRegistration.isScopeRequired(), 
+						  new HashSet<>(clientRegistration.getGrantTypes()),
+						  new HashSet<>(clientRegistration.getScopes()),
+						  new HashSet<>(clientRegistration.getRedirectUris()));
+	}
+	
+	public ClientDTO map(Client client, String originalSecret) {
+		return new ClientDTO(client.getId(),
+							 client.getApplicationName(),
+							 client.getIdentifier(),
+							 originalSecret,
+							 client.requiresConsent(),
+							 client.getScopes().stream().toList(),
+							 client.getRedirectUris().stream().toList(),
+							 client.getGrantTypes().stream().toList());
+	}
 }

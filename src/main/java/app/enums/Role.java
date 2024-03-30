@@ -2,6 +2,7 @@ package app.enums;
 
 public enum Role {
 
-	USER
+	USER,
+	DEV,
 	
 }
