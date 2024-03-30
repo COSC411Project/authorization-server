@@ -25,24 +25,24 @@
     width: fit-content;
 }
 
-.redirectUris ul {
+.modifiableList ul {
     display: flex;
     list-style: none;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.redirectUris li {
+.modifiableList li {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.redirectUris input {
+.modifiableList input, .modifiableList select {
     flex: 1;
 }
 
-.redirectUris button {
+.modifiableList button {
     width: 25px;
     height: 25px;
     border-radius: 100%;

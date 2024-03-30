@@ -8,7 +8,7 @@ class GrantType {
     }
 
     clone() {
-        const grantType = GrantType();
+        const grantType = new GrantType();
         grantType.key = this.key;
         grantType.value = this.value;
         return grantType;

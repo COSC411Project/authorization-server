@@ -9,18 +9,14 @@ import { v4 } from 'uuid'
 
 const ClientRegistration = () => {
     const [applicationName, setApplicationName] = useState("");
-    const [grantType, setGrantType] = useState("");
+    const [grantTypes, setGrantTypes] = useState([new GrantType(v4(), "")]);
     const [scopeRequired, setScopeRequired] = useState(false);
-    const [scope, setScope] = useState("");
+    const [scopes, setScopes] = useState([new Scope(v4(), "")]);
     const [redirectUris, setRedirectUris] = useState([new RedirectUri(v4(), "")]);
     const optionsContext = useContext(OptionsContext);
 
     const handleApplicationNameChange = (event) => {
         setApplicationName(event.target.value);
-    }
-
-    const handleGrantTypeChange = (event) => {
-        setGrantType(event.target.value);
     }
 
     const handleScopeRequiredChange = (event) => {
@@ -31,10 +27,6 @@ const ClientRegistration = () => {
         }
     }
 
-    const handleScopeChange = (event) => {
-        setScope(event.target.value);
-    }
-    
     const handleRegister = async (event) => {
         event.preventDefault();
         
@@ -73,14 +65,14 @@ const ClientRegistration = () => {
                     />
                 </div>
                 
-                <div>
-                    <label htmlFor="grantType">Grant Type:</label>
-                    <SelectWithItems 
-                        id="grantType"
+                <div className={style.modifiableList}>
+                    <label htmlFor="grantType">Grant Type(s):</label>
+                    <ModifiableSelectWithItems 
                         display="Select a grant type"
-                        items={optionsContext.grantTypes}
-                        onChange={handleGrantTypeChange}
-                        value={grantType}
+                        items={grantTypes}
+                        setter={setGrantTypes}
+                        Model={GrantType}
+                        selectItems={optionsContext.grantTypes}
                     />
                 </div>
 
@@ -112,18 +104,18 @@ const ClientRegistration = () => {
                     </div>
                 </div>
 
-                <div>
-                    <label htmlFor='scope'>Scope:</label>
-                    <SelectWithItems
-                        id="scope"
+                <div className={style.modifiableList}>
+                    <label htmlFor='scope'>Scope(s):</label>
+                    <ModifiableSelectWithItems 
                         display="Select a scope"
-                        items={optionsContext.scopes}
-                        value={scope}
-                        onChange={handleScopeChange}
+                        items={scopes}
+                        setter={setScopes}
+                        Model={Scope}
+                        selectItems={optionsContext.scopes}
                     />
                 </div>
 
-                <div className={style.redirectUris}>
+                <div className={style.modifiableList}>
                     <label>Redirect Uri(s):</label>
                     <ModifiableInputList 
                         items={redirectUris}
@@ -185,4 +177,49 @@ const ModifiableInputList = ({items, setter, Model}) => {
     )
 }
 
+const ModifiableSelectWithItems = ({display, items, setter, Model, selectItems}) => {
+    const handleChange = useCallback((event) => {
+        const target = event.target;
+        const uuid = target.getAttribute("data-key");
+        const index = items.findIndex(item => item.key === uuid);
+        const clone = items[index].clone();
+        clone.value = target.value;
+
+        setter(prevItems => prevItems.toSpliced(index, 1, clone));
+    }, [items]);
+
+    const handleButtonClick = (event) => {
+        event.preventDefault();
+
+        const target = event.target;
+        const index = target.getAttribute("data-index");
+        if (target.value === "+") {
+            setter(prevItems => prevItems.concat([new Model(v4(), "")]));
+        } else {
+            setter(prevItems => prevItems.toSpliced(index, 1));
+        }
+    }
+
+    return (
+        <ul>
+            {items.map((item, index) => (
+                <li key={item.key}>
+                    <SelectWithItems 
+                        display={display}
+                        items={selectItems}
+                        onChange={handleChange}
+                        value={item.value}
+                        dataKey={item.key}
+                    />
+
+                    <button value={index === items.length - 1 ? "+" : "-"} 
+                            onClick={handleButtonClick} 
+                            data-key={item.key}>
+                        {index === items.length - 1 ? "+" : "-"}
+                    </button>
+                </li>
+            ))}
+        </ul>
+    )
+}
 export default ClientRegistration
