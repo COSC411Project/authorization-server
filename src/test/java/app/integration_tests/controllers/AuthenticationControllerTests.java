@@ -2,7 +2,6 @@ package app.integration_tests.controllers;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -66,11 +65,19 @@ public class AuthenticationControllerTests {
 	
 	@BeforeEach
 	public void setup() throws NoSuchAlgorithmException {
-		client = new Client("client", "secret", false, Set.of(GrantType.AUTHORIZATION_CODE), Set.of(Scope.READ), Set.of("http://localhost:5173"));
+		client = new Client("name", 
+							"client", 
+							"secret", 
+							false, 
+							Set.of(GrantType.AUTHORIZATION_CODE), 
+							Set.of(Scope.READ), 
+							Set.of("http://localhost:5173"));
 		clientRepository.save(client);
 		
 		code = clientService.generateAuthorizationCode(client.getIdentifier(), client.getRedirectUris().iterator().next());
-	
+		
+		privateKeyPath = System.getProperty("user.home") + "/" + privateKeyPath;
+		
 		KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
 		generator.initialize(2048);
 		

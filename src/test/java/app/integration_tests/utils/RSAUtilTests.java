@@ -23,7 +23,7 @@ import app.utils.RSAUtil;
 @ActiveProfiles("test")
 @SpringBootTest
 public class RSAUtilTests {
-	
+
 	@Value("${rsa.private-key.path}")
 	private String privateKeyPath;
 
@@ -32,6 +32,8 @@ public class RSAUtilTests {
 	
 	@BeforeEach
 	public void setup() throws NoSuchAlgorithmException {
+		privateKeyPath = System.getProperty("user.home") + "/" + privateKeyPath;
+		
 		KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
 		generator.initialize(2048);
 		
@@ -55,7 +57,7 @@ public class RSAUtilTests {
 	@Test
 	public void getPrivateKey() {
 		// Act
-		RSAKey rsaKey = rsaUtil.getPrivateKey();
+		RSAKey rsaKey = rsaUtil.getPrivateKey(privateKeyPath);
 		
 		// Assert
 		assertNotNull(rsaKey);

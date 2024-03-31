@@ -1,6 +1,5 @@
 package app.utils;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAKey;
@@ -11,13 +10,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RSAUtil {
-	
-	@Value("${rsa.private-key.path}")
-	private String privateKeyPath;
 
-	public RSAKey getPrivateKey() {
-		String fullPrivateKeyPath = System.getProperty("user.home") + "/" + privateKeyPath;
-		try (FileInputStream inputStream = new FileInputStream(fullPrivateKeyPath)) {
+	public RSAKey getPrivateKey(String privateKeyPath) {
+		try (FileInputStream inputStream = new FileInputStream(privateKeyPath)) {
 			byte[] bytes = inputStream.readAllBytes();
 			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
 			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -28,5 +23,5 @@ public class RSAUtil {
 		
 		return null;
 	}
-	
+
 }

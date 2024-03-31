@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,9 @@ public class ClientService implements IClientService {
 	private final PasswordEncoder passwordEncoder;
 	private final ITokenRepository tokenRepository;
 	private final RSAUtil rsaUtil;
+	
+	@Value("${rsa.private-key.path}")
+	private String privateKeyPath;
 	
 	public ClientService(IClientRepository clientRepository, 
 						 IAuthorizationCodeRepository authorizationCodeRepository, 
@@ -97,7 +101,8 @@ public class ClientService implements IClientService {
 
 	@Override
 	public TokenDTO generateToken(Authentication authentication, String clientId, Scope scope) throws KeyNotFoundException {
-		RSAKey privateKey = rsaUtil.getPrivateKey();
+		String fullPrivateKeyPath = System.getProperty("user.home") + "/" + privateKeyPath;
+		RSAKey privateKey = rsaUtil.getPrivateKey(fullPrivateKeyPath);
 		if (privateKey == null) {
 			throw new KeyNotFoundException();
 		}
@@ -131,7 +136,8 @@ public class ClientService implements IClientService {
 	
 	public Client map(ClientRegistrationDTO clientRegistration) {
 		String identifier = UUID.randomUUID().toString();
-		return new Client(identifier, 
+		return new Client(clientRegistration.getApplicationName(),
+						  identifier, 
 						  null, 
 					      clientRegistration.isScopeRequired(), 
 						  new HashSet<>(clientRegistration.getGrantTypes()),

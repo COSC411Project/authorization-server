@@ -1,6 +1,5 @@
 package app.unit_tests.services;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -205,7 +204,7 @@ public class ClientServiceTests {
 		
 		KeyPair keyPair = generator.generateKeyPair();
 		RSAKey privateKey = (RSAKey) keyPair.getPrivate();
-		when(rsaUtil.getPrivateKey()).thenReturn(privateKey);
+		when(rsaUtil.getPrivateKey(anyString())).thenReturn(privateKey);
 		
 		String clientId = "client";
 		int userId = 1;
@@ -228,7 +227,7 @@ public class ClientServiceTests {
 	@Test
 	public void generateToken_privateKeyNull_exception() throws KeyNotFoundException {
 		// Arrange
-		when(rsaUtil.getPrivateKey()).thenReturn(null);
+		when(rsaUtil.getPrivateKey(anyString())).thenReturn(null);
 		
 		String clientId = "client";
 		int userId = 1;

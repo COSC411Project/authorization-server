@@ -52,12 +52,13 @@ public class TokenRepositoryTests {
 	@BeforeEach
 	public void setup() throws NoSuchAlgorithmException {
 		String redirectUri = "http://localhost:5173/";
-		client = new Client("identifier", 
-								   "secret", 
-								   false, 
-								   Set.of(GrantType.AUTHORIZATION_CODE), 
-								   Set.of(Scope.READ), 
-								   Set.of(redirectUri));
+		client = new Client("application name",
+							"identifier", 
+						    "secret", 
+						    false, 
+						    Set.of(GrantType.AUTHORIZATION_CODE), 
+						    Set.of(Scope.READ), 
+						    Set.of(redirectUri));
 		
 		LocalDateTime datetime = TimeUtil.now();
 		authorizationCode = new AuthorizationCode("code", redirectUri, datetime, client);

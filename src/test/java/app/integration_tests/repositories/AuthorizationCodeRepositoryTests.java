@@ -38,7 +38,8 @@ public class AuthorizationCodeRepositoryTests {
 	@BeforeEach
 	public void setup() {
 		String redirectUri = "http://localhost:5173/";
-		Client client = new Client("identifier", 
+		Client client = new Client("application name",
+								   "identifier", 
 								   "secret", 
 								   false, 
 								   Set.of(GrantType.AUTHORIZATION_CODE), 

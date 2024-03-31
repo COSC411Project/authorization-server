@@ -62,8 +62,11 @@ public class Client {
 		this.redirectUris = redirectUris;
 	}
 
-	public Client(String identifier, String secret, boolean requiresConsent, Set<GrantType> grantTypes, Set<Scope> scopes, Set<String> redirectUris) {
+
+	public Client(String applicationName, String identifier, String secret, boolean requiresConsent,
+			Set<GrantType> grantTypes, Set<Scope> scopes, Set<String> redirectUris) {
 		super();
+		this.applicationName = applicationName;
 		this.identifier = identifier;
 		this.secret = secret;
 		this.requiresConsent = requiresConsent;

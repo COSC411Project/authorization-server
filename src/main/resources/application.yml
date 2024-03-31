@@ -22,7 +22,7 @@ spring:
     
 rsa:
   private-key:
-    path: keys/authorization-server/private.key
+    path: keys/authorization-server/prod/private.key
       
 ---
 
@@ -41,4 +41,4 @@ spring:
     
 rsa:
   private-key:
-    path: ./src/test/java/app/keys/private.key
+    path: keys/authorization-server/test/private.key

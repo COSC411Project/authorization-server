@@ -37,12 +37,13 @@ public class ClientServiceTests {
 	
 	@BeforeEach
 	public void setup() {
-		client = new Client("client", 
-						   "secret", 
-						   false, 
-						   Set.of(GrantType.AUTHORIZATION_CODE), 
-						   Set.of(Scope.READ),
-						   Set.of("http://localhost:5173/"));
+		client = new Client("application name",
+							"client", 
+							"secret", 
+							false, 
+							Set.of(GrantType.AUTHORIZATION_CODE), 
+							Set.of(Scope.READ),
+							Set.of("http://localhost:5173/"));
 	}
 	
 	@AfterEach
