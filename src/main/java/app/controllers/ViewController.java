@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/dev")
 public class ViewController {
 
-	@GetMapping({"/clients/register", "/clients", "/users"})
+	@GetMapping({"/clients/register", "/clients", "/clients/*", "/users"})
 	public String clients() {
 		return "/index.html";
 	}

@@ -8,7 +8,7 @@ class Client {
     scopes;
     redirectUris;
 
-    construct(id, applicationName, identifier, secret, requiresConsent, grantTypes, scopes, redirectUris) {
+    constructor(id, applicationName, identifier, secret, requiresConsent, grantTypes, scopes, redirectUris) {
         this.id = id;
         this.applicationName = applicationName;
         this.identifier = identifier;

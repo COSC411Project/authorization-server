@@ -1,3 +1,4 @@
+import DataContext from '../../stores/DataContext'
 import GrantType from '../../models/GrantType'
 import OptionsContext from '../../stores/OptionsContext'
 import Scope from '../../models/Scope'
@@ -14,6 +15,7 @@ const ClientRegistration = () => {
     const [scopes, setScopes] = useState([new Scope(v4(), "")]);
     const [redirectUris, setRedirectUris] = useState([new RedirectUri(v4(), "")]);
     const optionsContext = useContext(OptionsContext);
+    const dataContext = useContext(DataContext);
 
     const handleApplicationNameChange = (event) => {
         setApplicationName(event.target.value);
@@ -29,26 +31,17 @@ const ClientRegistration = () => {
 
     const handleRegister = async (event) => {
         event.preventDefault();
-        
-        const dto = {
-            "applicationName": applicationName,
-            "grantTypes": grantTypes,
-            "scopeRequired": scopeRequired,
-            "scopes": scopes,
-            "redirectUris": redirectUris.filter(redirectUri => redirectUri.value.length > 0)
-                                        .map(redirectUri => redirectUri.value)
-        }
-    
-        const response = await fetch("http://localhost:9000/api/clients/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(dto)
-        });
-        
-        if (response.status === 201) {
 
+        const clientRegistrationDTO = new ClientRegistrationDTO(applicationName,
+                                                                getValues(grantTypes),
+                                                                scopeRequired,
+                                                                getValues(scopes),
+                                                                getValues(redirectUris));
+        const result = dataContext.registerClient(clientRegistrationDTO);
+        if (result[0]) {
+            // Handle success
+        } else {
+            // Display error message
         }
     }
 
@@ -132,11 +125,16 @@ const ClientRegistration = () => {
     )
 }
 
+function getValues(items) {
+    return items.filter(item => item.value.length > 0)
+                .map(item => item.value);
+}
+
 const ModifiableInputList = ({items, setter, Model}) => {
     const handleChange = useCallback((event) => {
         const target = event.target;
-        const uuid = target.getAttribute("data-key");
-        const index = items.findIndex(item => item.key === uuid);
+        const key = target.getAttribute("data-key");
+        const index = items.findIndex(item => item.key === key);
         const clone = items[index].clone();
         clone.value = target.value;
 
@@ -147,11 +145,11 @@ const ModifiableInputList = ({items, setter, Model}) => {
         event.preventDefault();
 
         const target = event.target;
-        const index = target.getAttribute("data-index");
+        const key = target.getAttribute("data-key");
         if (target.value === "+") {
             setter(prevItems => prevItems.concat([new Model(v4(), "")]));
         } else {
-            setter(prevItems => prevItems.toSpliced(index, 1));
+            setter(prevItems => prevItems.filter(item => item.key !== key));
         }
     }
 
@@ -180,8 +178,8 @@ const ModifiableInputList = ({items, setter, Model}) => {
 const ModifiableSelectWithItems = ({display, items, setter, Model, selectItems}) => {
     const handleChange = useCallback((event) => {
         const target = event.target;
-        const uuid = target.getAttribute("data-key");
-        const index = items.findIndex(item => item.key === uuid);
+        const key = target.getAttribute("data-key");
+        const index = items.findIndex(item => item.key === key);
         const clone = items[index].clone();
         clone.value = target.value;
 
@@ -192,11 +190,11 @@ const ModifiableSelectWithItems = ({display, items, setter, Model, selectItems})
         event.preventDefault();
 
         const target = event.target;
-        const index = target.getAttribute("data-index");
+        const key = target.getAttribute("data-key");
         if (target.value === "+") {
             setter(prevItems => prevItems.concat([new Model(v4(), "")]));
         } else {
-            setter(prevItems => prevItems.toSpliced(index, 1));
+            setter(prevItems => prevItems.filter(item => item.key !== key));
         }
     }
 
