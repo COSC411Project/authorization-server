@@ -1,6 +1,7 @@
 package app.dtos;
 
 import java.util.List;
+import java.util.Objects;
 
 import app.enums.GrantType;
 import app.enums.Scope;
@@ -58,6 +59,26 @@ public class ClientDTO {
 
 	public List<String> getRedirectUris() {
 		return redirectUris;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(applicationName, grantTypes, id, identifier, redirectUris, requiresConsent, scopes, secret);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClientDTO other = (ClientDTO) obj;
+		return Objects.equals(applicationName, other.applicationName) && Objects.equals(grantTypes, other.grantTypes)
+				&& id == other.id && Objects.equals(identifier, other.identifier)
+				&& Objects.equals(redirectUris, other.redirectUris) && requiresConsent == other.requiresConsent
+				&& Objects.equals(scopes, other.scopes) && Objects.equals(secret, other.secret);
 	}
 	
 }

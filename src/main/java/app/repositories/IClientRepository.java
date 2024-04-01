@@ -9,5 +9,6 @@ import app.entities.Client;
 public interface IClientRepository extends ListCrudRepository<Client, Integer> {
 
 	Optional<Client> findByIdentifier(String identifier);
+	Optional<Client> findByApplicationName(String applicationName);
 	
 }

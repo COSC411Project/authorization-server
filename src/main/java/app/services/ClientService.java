@@ -20,12 +20,14 @@ import app.dtos.TokenDTO;
 import app.entities.AuthorizationCode;
 import app.entities.Client;
 import app.enums.Scope;
+import app.exceptions.ApplicationNameTakenException;
 import app.exceptions.KeyNotFoundException;
 import app.models.JwtOptions;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
 import app.repositories.ITokenRepository;
 import app.utils.JWTUtil;
+import app.utils.Mapper;
 import app.utils.RSAUtil;
 import app.utils.TimeUtil;
 import jakarta.transaction.Transactional;
@@ -123,36 +125,39 @@ public class ClientService implements IClientService {
 	}
 
 	@Override
-	public ClientDTO register(ClientRegistrationDTO clientRegistration) {
-		Client client = map(clientRegistration);
+	public ClientDTO register(ClientRegistrationDTO clientRegistration) throws ApplicationNameTakenException {
+		Client client = Mapper.map(clientRegistration);
+		if (applicationNameTaken(client.getApplicationName())) {
+			throw new ApplicationNameTakenException(client.getApplicationName());
+		}
 		
+		String identifier = UUID.randomUUID().toString();
 		String secret = UUID.randomUUID().toString();
 		
+		client.setIdentifier(identifier);
 		client.setSecret(passwordEncoder.encode(secret));
+		
 		Client savedClient = clientRepository.save(client);
 		
-		return map(savedClient, secret);
+		return Mapper.map(savedClient, secret);
 	}
 	
-	public Client map(ClientRegistrationDTO clientRegistration) {
-		String identifier = UUID.randomUUID().toString();
-		return new Client(clientRegistration.getApplicationName(),
-						  identifier, 
-						  null, 
-					      clientRegistration.isScopeRequired(), 
-						  new HashSet<>(clientRegistration.getGrantTypes()),
-						  new HashSet<>(clientRegistration.getScopes()),
-						  new HashSet<>(clientRegistration.getRedirectUris()));
+	
+	
+	private boolean applicationNameTaken(String applicationName) {
+		Optional<Client> client = clientRepository.findByApplicationName(applicationName);
+		if (client.isPresent()) {
+			return true;
+		}
+		
+		return false;
 	}
 	
-	public ClientDTO map(Client client, String originalSecret) {
-		return new ClientDTO(client.getId(),
-							 client.getApplicationName(),
-							 client.getIdentifier(),
-							 originalSecret,
-							 client.requiresConsent(),
-							 client.getScopes().stream().toList(),
-							 client.getRedirectUris().stream().toList(),
-							 client.getGrantTypes().stream().toList());
+	public List<ClientDTO> getClients() {
+		List<Client> clients = clientRepository.findAll();
+		return clients.stream()
+					  .map(client -> Mapper.map(client))
+					  .toList();
 	}
+	
 }

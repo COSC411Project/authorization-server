@@ -13,6 +13,16 @@ public class ClientRegistrationDTO {
 	private List<Scope> scopes;
 	private List<String> redirectUris;
 	
+	public ClientRegistrationDTO(String applicationName, boolean scopeRequired, List<GrantType> grantTypes,
+			List<Scope> scopes, List<String> redirectUris) {
+		super();
+		this.applicationName = applicationName;
+		this.scopeRequired = scopeRequired;
+		this.grantTypes = grantTypes;
+		this.scopes = scopes;
+		this.redirectUris = redirectUris;
+	}
+
 	public String getApplicationName() {
 		return applicationName;
 	}

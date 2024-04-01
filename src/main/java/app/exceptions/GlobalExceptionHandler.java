@@ -1,5 +1,7 @@
 package app.exceptions;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,5 +30,10 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(KeyNotFoundException.class)
 	public ResponseEntity<Object> handleKeyNotFoundException() {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(ApplicationNameTakenException.class)
+	public ResponseEntity<Object> handleApplicationNameTakenException() {
+		return new ResponseEntity<>(new ErrorDTO("Application name is already being used."), HttpStatus.BAD_REQUEST);
 	}
 }
