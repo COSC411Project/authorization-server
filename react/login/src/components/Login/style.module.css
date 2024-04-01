@@ -1,0 +1,19 @@
+.container form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 300px;
+    margin: auto;
+    margin-top: 10rem;
+}
+
+.container form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.container form input[type="submit"] {
+    width: fit-content;
+    align-self: end;
+}

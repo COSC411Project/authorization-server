@@ -2,15 +2,18 @@ package app.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/dev")
 public class ViewController {
 
-	@GetMapping({"/clients/register", "/clients", "/clients/*", "/users"})
+	@GetMapping({"/dev/clients/register", "/dev/clients", "/dev/clients/*", "/dev/users"})
 	public String clients() {
-		return "/index.html";
+		return "/dev/index.html";
+	}
+	
+	@GetMapping("/login**")
+	public String login() {
+		return "/login/index.html";
 	}
 	
 }

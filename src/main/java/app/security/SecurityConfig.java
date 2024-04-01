@@ -50,6 +50,7 @@ public class SecurityConfig {
 		return source;
 	}
 	
+	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
 		return http.cors((customizer) -> {
@@ -57,8 +58,11 @@ public class SecurityConfig {
 		}).csrf((customizer) -> {
 			customizer.disable();
 		}).formLogin((customizer) -> {
+			customizer.loginPage("/login")
+					  .usernameParameter("email")
+					  .passwordParameter("password");
 		}).authorizeHttpRequests((customizer) -> {
-			customizer.requestMatchers("/login").permitAll();
+			customizer.requestMatchers("/login/**").permitAll();
 			customizer.requestMatchers("/api/**").hasRole("DEV");
 			customizer.anyRequest().hasAnyRole("USER", "DEV");
 		}).build();
