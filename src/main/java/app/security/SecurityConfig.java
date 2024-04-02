@@ -1,5 +1,6 @@
 package app.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,18 @@ import app.security.user.UserAuthenticationProvider;
 @Configuration
 public class SecurityConfig {
 	
+	@Value("${oauth.github.client-id}")
+	private String githubClientId;
+	
+	@Value("${oauth.github.client-secret}")
+	private String githubClientSecret;
+	
+	@Value("${oauth.google.client-id}")
+	private String googleClientId;
+	
+	@Value("${oauth.google.client-secret}")
+	private String googleClientSecret;
+	
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return NoOpPasswordEncoder.getInstance();
@@ -37,16 +50,24 @@ public class SecurityConfig {
 	@Bean
 	ClientRegistration githubRegistration() {
 		return CommonOAuth2Provider.GITHUB.getBuilder("github")
-										  .clientId("b3471ad069f7baeff07a")
-										  .clientSecret("a6fd1680c9109a561eee36a1c33a2a3820f5682f")
+										  .clientId(githubClientId)
+										  .clientSecret(githubClientSecret)
+										  .build();
+	}
+	
+	@Bean
+	ClientRegistration googleRegistration() {
+		return CommonOAuth2Provider.GOOGLE.getBuilder("google")
+										  .clientId(googleClientId)
+										  .clientSecret(googleClientSecret)
 										  .build();
 	}
 	
 	@Bean
 	ClientRegistrationRepository clientRegistrationRepository() {
 		var githubRegistration = githubRegistration();
-		
-		return new InMemoryClientRegistrationRepository(githubRegistration);
+		var googleRegistration = googleRegistration();
+		return new InMemoryClientRegistrationRepository(githubRegistration, googleRegistration);
 	}
 	
 	@Bean

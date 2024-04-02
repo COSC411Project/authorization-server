@@ -1,5 +1,27 @@
-{"properties": [{
-  "name": "rsa.private-key.path",
-  "type": "java.lang.String",
-  "description": "The path to your private key (for JWT signing)"
-}]}
+{"properties": [
+  {
+    "name": "rsa.private-key.path",
+    "type": "java.lang.String",
+    "description": "The path to your private key (for JWT signing)"
+  },
+  {
+    "name": "oauth.github.client-id",
+    "type": "java.lang.String",
+    "description": "The client id provided by github to participate in the oauth flow"
+  },
+  {
+    "name": "oauth.github.client-secret",
+    "type": "java.lang.String",
+    "description": "The client secret provided by github to participate in the oauth flow"
+  },
+  {
+    "name": "oauth.google.client-secret",
+    "type": "java.lang.String",
+    "description": "The client secret provided by google to participate in the oauth flow"
+  },
+  {
+    "name": "oauth.google.client-id",
+    "type": "java.lang.String",
+    "description": "The client id provided by google to participate in the oauth flow"
+  }
+]}
