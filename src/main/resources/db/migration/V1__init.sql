@@ -11,7 +11,7 @@ create table user (
 
 create table client (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    application_name varchar(30) UNIQUE NOT NULL,
+    application_name varchar(50) UNIQUE NOT NULL,
 	identifier varchar(50) NOT NULL,
 	secret varchar(100) NOT NULL,
 	requires_consent BOOLEAN NOT NULL

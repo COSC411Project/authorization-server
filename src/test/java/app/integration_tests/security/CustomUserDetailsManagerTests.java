@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -43,7 +44,7 @@ public class CustomUserDetailsManagerTests {
 	@BeforeEach
 	public void setup() {
 		String password = passwordEncoder.encode("password");
-		user = new User("email", password, true, Role.USER);
+		user = new User("email", password, true, Role.USER, LocalDate.now());
 		userRepository.save(user);
 	}
 	

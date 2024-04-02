@@ -89,7 +89,7 @@ public class ClientServiceTests {
 		when(authorizationCodeRepository.findByClientIdAndRedirectUri(anyInt(), anyString())).thenReturn(List.of(authorizationCode));
 		
 		// Act
-		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", clientSecret, "redirect uri");
+		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", "redirect uri");
 	
 		// Assert
 		assertTrue(isValid);
@@ -101,20 +101,7 @@ public class ClientServiceTests {
 		when(authorizationCodeRepository.findByCode(anyString())).thenReturn(Optional.empty());
 
 		// Act
-		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", clientSecret, "redirect uri");
-	
-		// Assert
-		assertFalse(isValid);
-	}
-	
-	@Test
-	public void isValidAuthorizationCode_clientNotPresent_false() {
-		// Arrange		
-		when(authorizationCodeRepository.findByCode(anyString())).thenReturn(Optional.of(new AuthorizationCode()));
-		when(clientRepository.findByIdentifier(anyString())).thenReturn(Optional.empty());
-		
-		// Act
-		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", clientSecret, "redirect uri");
+		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", "redirect uri");
 	
 		// Assert
 		assertFalse(isValid);
@@ -133,7 +120,7 @@ public class ClientServiceTests {
 		when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
 		// Act
-		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", clientSecret, "redirect uri");
+		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", "redirect uri");
 	
 		// Assert
 		assertFalse(isValid);
@@ -154,7 +141,7 @@ public class ClientServiceTests {
 		when(authorizationCodeRepository.findByClientIdAndRedirectUri(anyInt(), anyString())).thenReturn(List.of());
 		
 		// Act
-		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", clientSecret, "redirect uri");
+		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", "redirect uri");
 	
 		// Assert
 		assertFalse(isValid);
@@ -176,7 +163,7 @@ public class ClientServiceTests {
 		when(authorizationCodeRepository.findByClientIdAndRedirectUri(anyInt(), anyString())).thenReturn(List.of(authorizationCode));
 		
 		// Act
-		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", clientSecret, "redirect uri");
+		boolean isValid = clientService.isValidAuthorizationCode(code, "identifer", "redirect uri");
 	
 		// Assert
 		assertFalse(isValid);
@@ -198,7 +185,7 @@ public class ClientServiceTests {
 		when(authorizationCodeRepository.findByClientIdAndRedirectUri(anyInt(), anyString())).thenReturn(List.of(authorizationCode));
 		
 		// Act
-		boolean isValid = clientService.isValidAuthorizationCode("different code", "identifer", clientSecret, "redirect uri");
+		boolean isValid = clientService.isValidAuthorizationCode("different code", "identifer", "redirect uri");
 	
 		// Assert
 		assertFalse(isValid);

@@ -98,14 +98,18 @@ public class AuthenticationController {
 										  @RequestParam(required = false, name = "redirect_uri") String redirectUri,
 										  Authentication authentication) throws ClientNotFoundException, InvalidRequestException, UnauthorizedException, KeyNotFoundException {
 		Authorization authorization = AuthorizationUtil.parseHeader(authorizationHeader);
+		if (!clientService.isValidClient(authorization.getClientId(), authorization.getClientSecret())) {
+			throw new UnauthorizedException();
+		}
 		
 		if (!isValidTokenRequest(authorization, grantType, code, scope, redirectUri)) {
 			throw new InvalidRequestException();
 		}
 		
-		TokenDTO token = clientService.generateToken(authentication, authorization.getClientId(), scope);
+		TokenDTO tokenDTO = clientService.generateToken(authentication, authorization.getClientId(), scope);
+		clientService.saveToken(authorization.getClientId(), code, tokenDTO);
 		
-		return new ResponseEntity<>(token, HttpStatus.OK);
+		return new ResponseEntity<>(tokenDTO, HttpStatus.OK);
 	}
 
 	public boolean isValidTokenRequest(Authorization authorization, 
@@ -126,7 +130,7 @@ public class AuthenticationController {
 			redirectUri = securityClient.getRedirectUri();
 		}
 		
-		boolean isValidAuthorizationCode = clientService.isValidAuthorizationCode(code, authorization.getClientId(), authorization.getClientSecret(), redirectUri);
+		boolean isValidAuthorizationCode = clientService.isValidAuthorizationCode(code, authorization.getClientId(), redirectUri);
 		if (!isValidAuthorizationCode) {
 			return false;
 		}

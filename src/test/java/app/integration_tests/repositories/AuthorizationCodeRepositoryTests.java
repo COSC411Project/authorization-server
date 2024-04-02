@@ -37,6 +37,9 @@ public class AuthorizationCodeRepositoryTests {
 	
 	@BeforeEach
 	public void setup() {
+		authorizationCodeRepository.deleteAll();
+		clientRepository.deleteAll();
+		
 		String redirectUri = "http://localhost:5173/";
 		Client client = new Client("application name",
 								   "identifier", 
@@ -50,6 +53,7 @@ public class AuthorizationCodeRepositoryTests {
 		code = new AuthorizationCode("code", redirectUri, datetime, client);
 	}
 	
+	@BeforeEach
 	@AfterEach
 	public void cleanup() {
 		authorizationCodeRepository.deleteAll();

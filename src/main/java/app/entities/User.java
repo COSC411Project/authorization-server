@@ -33,12 +33,13 @@ public class User {
 	public User() {
 	}
 
-	public User(String email, String password, boolean enabled, Role role) {
+	public User(String email, String password, boolean enabled, Role role, LocalDate dateCreated) {
 		super();
 		this.email = email;
 		this.password = password;
 		this.enabled = enabled;
 		this.role = role;
+		this.dateCreated = dateCreated;
 	}
 
 	public User(int id, String email, String password, Role role) {

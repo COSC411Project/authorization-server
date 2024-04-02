@@ -6,6 +6,7 @@ import java.util.Set;
 
 import app.enums.GrantType;
 import app.enums.Scope;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -46,7 +47,7 @@ public class Client {
 	@Column(name="redirect_uri")
 	private Set<String> redirectUris;
 	
-	@OneToMany(mappedBy="client")
+	@OneToMany(mappedBy="client", cascade=CascadeType.ALL)
 	private List<AuthorizationCode> codes;
 	
 	@OneToMany(mappedBy="client")

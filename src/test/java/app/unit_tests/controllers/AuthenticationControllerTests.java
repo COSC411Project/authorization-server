@@ -115,7 +115,7 @@ public class AuthenticationControllerTests {
 		SecurityClient securityClient = new SecurityClient(client);
 		
 		when(clientDetailsManager.getClient(anyString())).thenReturn(securityClient);
-		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString(), anyString())).thenReturn(true);
+		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString())).thenReturn(true);
 		
 		// Act
 		boolean isValid = authenticationController.isValidTokenRequest(authorization, GrantType.AUTHORIZATION_CODE, "code", Scope.READ, "http://localhost");
@@ -134,7 +134,7 @@ public class AuthenticationControllerTests {
 		SecurityClient securityClient = new SecurityClient(client);
 		
 		when(clientDetailsManager.getClient(anyString())).thenReturn(securityClient);
-		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString(), anyString())).thenReturn(true);
+		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString())).thenReturn(true);
 		
 		// Act
 		boolean isValid = authenticationController.isValidTokenRequest(authorization, GrantType.AUTHORIZATION_CODE, "code", Scope.READ, null);
@@ -153,7 +153,7 @@ public class AuthenticationControllerTests {
 		SecurityClient securityClient = new SecurityClient(client);
 		
 		when(clientDetailsManager.getClient(anyString())).thenReturn(securityClient);
-		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString(), anyString())).thenReturn(true);
+		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString())).thenReturn(true);
 		
 		// Act
 		boolean isValid = authenticationController.isValidTokenRequest(authorization, GrantType.AUTHORIZATION_CODE, "code", Scope.READ, "http://localhost");
@@ -172,7 +172,7 @@ public class AuthenticationControllerTests {
 		SecurityClient securityClient = new SecurityClient(client);
 		
 		when(clientDetailsManager.getClient(anyString())).thenReturn(securityClient);
-		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString(), anyString())).thenReturn(true);
+		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString())).thenReturn(true);
 		
 		// Act
 		boolean isValid = authenticationController.isValidTokenRequest(authorization, GrantType.AUTHORIZATION_CODE, null, Scope.READ, "http://localhost");
@@ -191,7 +191,7 @@ public class AuthenticationControllerTests {
 		SecurityClient securityClient = new SecurityClient(client);
 		
 		when(clientDetailsManager.getClient(anyString())).thenReturn(securityClient);
-		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString(), anyString())).thenReturn(true);
+		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString())).thenReturn(true);
 		
 		// Act
 		boolean isValid = authenticationController.isValidTokenRequest(authorization, GrantType.AUTHORIZATION_CODE, "   ", Scope.READ, "http://localhost");
@@ -210,7 +210,7 @@ public class AuthenticationControllerTests {
 		SecurityClient securityClient = new SecurityClient(client);
 		
 		when(clientDetailsManager.getClient(anyString())).thenReturn(securityClient);
-		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString(), anyString())).thenReturn(true);
+		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString())).thenReturn(true);
 		
 		// Act
 		boolean isValid = authenticationController.isValidTokenRequest(authorization, GrantType.AUTHORIZATION_CODE, "code", Scope.READ_WRITE, "http://localhost");
@@ -229,7 +229,7 @@ public class AuthenticationControllerTests {
 		SecurityClient securityClient = new SecurityClient(client);
 		
 		when(clientDetailsManager.getClient(anyString())).thenReturn(securityClient);
-		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString(), anyString())).thenReturn(false);
+		when(clientService.isValidAuthorizationCode(anyString(), anyString(), anyString())).thenReturn(false);
 		
 		// Act
 		boolean isValid = authenticationController.isValidTokenRequest(authorization, GrantType.AUTHORIZATION_CODE, "code", Scope.READ, "http://localhost");

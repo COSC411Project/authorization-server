@@ -32,6 +32,8 @@ spring:
 rsa:
   private-key:
     path: keys/cosc411/authorization-server/prod/private.key
+  public-key:
+    path: keys/cosc411/authorization-server/prod/public.key
       
 ---
 
@@ -51,3 +53,5 @@ spring:
 rsa:
   private-key:
     path: keys/cosc411/authorization-server/test/private.key
+  public-key:
+    path: keys/cosc411/authorization-server/test/public.key

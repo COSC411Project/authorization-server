@@ -3,8 +3,11 @@ package app.entities;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import app.enums.Scope;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,7 +23,11 @@ public class Token {
 	private int id;
 	private String token;
 	private LocalDateTime datetimeIssued;
+	private int expiresIn;
 	private boolean valid;
+	
+	@Enumerated(value=EnumType.STRING)
+	private Scope scope;
 	
 	@ManyToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="client_id")
@@ -38,6 +45,18 @@ public class Token {
 		this.token = token;
 		this.datetimeIssued = datetimeIssued;
 		this.valid = valid;
+	}
+
+	public Token(String token, LocalDateTime datetimeIssued, int expiresIn, boolean valid, Client client,
+			AuthorizationCode authorizationCode, Scope scope) {
+		super();
+		this.token = token;
+		this.datetimeIssued = datetimeIssued;
+		this.expiresIn = expiresIn;
+		this.valid = valid;
+		this.client = client;
+		this.authorizationCode = authorizationCode;
+		this.scope = scope;
 	}
 
 	public int getId() {
@@ -64,12 +83,28 @@ public class Token {
 		this.datetimeIssued = datetimeIssued;
 	}
 
+	public int getExpiresIn() {
+		return expiresIn;
+	}
+
+	public void setExpiresIn(int expiresIn) {
+		this.expiresIn = expiresIn;
+	}
+
 	public boolean isValid() {
 		return valid;
 	}
 
 	public void setValid(boolean valid) {
 		this.valid = valid;
+	}
+
+	public Scope getScope() {
+		return scope;
+	}
+
+	public void setScope(Scope scope) {
+		this.scope = scope;
 	}
 
 	public Client getClient() {

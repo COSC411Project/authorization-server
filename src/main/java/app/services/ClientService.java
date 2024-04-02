@@ -1,6 +1,7 @@
 package app.services;
 
 import java.security.interfaces.RSAKey;
+import java.security.interfaces.RSAPublicKey;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,11 +12,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import app.dtos.ClientDTO;
 import app.dtos.ClientRegistrationDTO;
 import app.dtos.TokenDTO;
 import app.entities.AuthorizationCode;
 import app.entities.Client;
+import app.entities.Token;
 import app.enums.Scope;
 import app.exceptions.ApplicationNameTakenException;
 import app.exceptions.KeyNotFoundException;
@@ -41,6 +45,9 @@ public class ClientService implements IClientService {
 	@Value("${rsa.private-key.path}")
 	private String privateKeyPath;
 	
+	@Value("${rsa.public-key.path}")
+	private String publicKeyPath;
+	
 	public ClientService(IClientRepository clientRepository, 
 						 IAuthorizationCodeRepository authorizationCodeRepository, 
 						 PasswordEncoder passwordEncoder,
@@ -65,18 +72,24 @@ public class ClientService implements IClientService {
 		
 		return code;
 	}
+	
+	public boolean isValidClient(String clientId, String clientSecret) {
+		Optional<Client> client = clientRepository.findByIdentifier(clientId);
+		if (!client.isPresent() || !passwordEncoder.matches(clientSecret, client.get().getSecret())) {
+			return false;
+		}
+		
+		return true;
+	}
 
 	@Override
-	public boolean isValidAuthorizationCode(String code, String clientId, String clientSecret, String redirectUri) {
+	public boolean isValidAuthorizationCode(String code, String clientId, String redirectUri) {
 		Optional<AuthorizationCode> savedCode = authorizationCodeRepository.findByCode(code);
 		if (!savedCode.isPresent()) {
 			return false;
 		}
 		
 		Optional<Client> client = clientRepository.findByIdentifier(clientId);
-		if (!client.isPresent() || !passwordEncoder.matches(clientSecret, client.get().getSecret())) {
-			return false;
-		}
 		
 		Optional<AuthorizationCode> latestCode = authorizationCodeRepository.findByClientIdAndRedirectUri(client.get().getId(), redirectUri)
 																			.stream()
@@ -115,10 +128,60 @@ public class ClientService implements IClientService {
 		int secondsTillExpiration = 30 * 60;
 		JwtOptions options = new JwtOptions(privateKey, userId, authorities, clientId, scope, secondsTillExpiration);
 		
-		String token = JWTUtil.generate(options);
+		String jwt = JWTUtil.generate(options);
 		String refreshToken = null;
 		
-		return new TokenDTO(token, "Bearer", secondsTillExpiration, scope, refreshToken);
+		return new TokenDTO(jwt, "Bearer", secondsTillExpiration, scope, refreshToken);
+	}
+	
+	@Override
+	public void saveToken(String clientId, String code, TokenDTO tokenDTO) {
+		Optional<Client> client = clientRepository.findByIdentifier(clientId);
+		Optional<AuthorizationCode> authorizationCode = authorizationCodeRepository.findByCode(code);
+		
+		Token token = new Token(tokenDTO.getAccessToken(), 
+								TimeUtil.now(), 
+								tokenDTO.getExpiresIn(), 
+								true,
+								client.get(),
+								authorizationCode.get(),
+								tokenDTO.getScope());
+		tokenRepository.save(token);
+	}
+	
+	@Override
+	public boolean latestTokenForUser(String clientId, Integer userId) {
+		Optional<Client> client = clientRepository.findByIdentifier(clientId);
+		List<Token> tokens = client.get().getTokens();
+		if (tokens.size() == 0) {
+			return false;
+		}
+		
+		String fullPublicKeyPath = System.getProperty("user.home") + publicKeyPath;
+		RSAPublicKey publicKey = (RSAPublicKey) rsaUtil.getPrivateKey(fullPublicKeyPath);
+		
+		Token lastToken = tokens.get(tokens.size() - 1);
+		if (lastToken.getDatetimeIssued().plusSeconds(lastToken.getExpiresIn()).isAfter(TimeUtil.now())) {
+			return false;
+		}
+		
+		String jwt = lastToken.getToken();
+		DecodedJWT decodedJWT = JWTUtil.decode(jwt, publicKey);
+		
+		return decodedJWT.getClaim("user").asInt().equals(userId);
+	}
+	
+	@Override
+	@Transactional
+	public TokenDTO getLatestToken(String clientId) {
+		Optional<Client> client = clientRepository.findByIdentifier(clientId);
+		List<Token> tokens = client.get().getTokens();
+		if (tokens.size() == 0) {
+			return null;
+		}
+		
+		Token token = tokens.get(tokens.size() - 1);
+		return new TokenDTO(token.getToken(), "Bearer", token.getExpiresIn(), token.getScope(), null);
 	}
 
 	@Override

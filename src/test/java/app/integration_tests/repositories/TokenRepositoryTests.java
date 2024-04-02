@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +53,7 @@ public class TokenRepositoryTests {
 	@BeforeEach
 	public void setup() throws NoSuchAlgorithmException {
 		String redirectUri = "http://localhost:5173/";
-		client = new Client("application name",
+		client = new Client(UUID.randomUUID().toString(),
 							"identifier", 
 						    "secret", 
 						    false, 

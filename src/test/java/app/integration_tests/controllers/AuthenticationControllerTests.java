@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,14 +28,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import app.entities.Client;
-import app.entities.User;
 import app.enums.GrantType;
-import app.enums.Role;
 import app.enums.Scope;
 import app.repositories.IAuthorizationCodeRepository;
 import app.repositories.IClientRepository;
@@ -65,8 +63,8 @@ public class AuthenticationControllerTests {
 	
 	@BeforeEach
 	public void setup() throws NoSuchAlgorithmException {
-		client = new Client("name", 
-							"client", 
+		client = new Client(UUID.randomUUID().toString(), 
+							UUID.randomUUID().toString(), 
 							"secret", 
 							false, 
 							Set.of(GrantType.AUTHORIZATION_CODE), 

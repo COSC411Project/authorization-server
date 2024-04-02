@@ -23,5 +23,10 @@
     "name": "oauth.google.client-id",
     "type": "java.lang.String",
     "description": "The client id provided by google to participate in the oauth flow"
+  },
+  {
+    "name": "rsa.public-key.path",
+    "type": "java.lang.String",
+    "description": "The path to your public key (for JWT verfication/decoding)"
   }
 ]}
