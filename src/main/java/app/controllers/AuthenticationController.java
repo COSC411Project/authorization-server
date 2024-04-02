@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -103,7 +104,7 @@ public class AuthenticationController {
 			throw new InvalidRequestException();
 		}
 		
-		TokenDTO token = clientService.generateToken(authentication, code, scope);
+		TokenDTO token = clientService.generateToken(authentication, authorization.getClientId(), scope);
 		
 		return new ResponseEntity<>(token, HttpStatus.OK);
 	}

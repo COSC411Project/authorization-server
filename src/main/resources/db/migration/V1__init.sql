@@ -1,9 +1,12 @@
 create table user (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	email varchar(100) NOT NULL,
-	password varchar(100) NOT NULL,
+    username varchar(100),
+	email varchar(100),
+	password varchar(100),
+    auth_provider varchar(20),
 	role varchar(15) NOT NULL,
-	enabled BOOLEAN NOT NULL
+	enabled BOOLEAN NOT NULL,
+    date_created date NOT NULL
 );
 
 create table client (

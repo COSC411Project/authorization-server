@@ -22,11 +22,11 @@ const Login = () => {
             <div className={style.options}>
                 <div className={style.oauthClients}>
                     <p>Sign in with:</p>
-                    <a href="/oauth/authorize/google">
+                    <a href="/oauth2/authorization/google">
                         <img src={google} className={style.google} />
                         <span>Google</span>
                     </a>
-                    <a href="/oauth/authorize/github">
+                    <a href="/oauth2/authorization/github">
                         <img src={github} className={style.github} />
                         <span>GitHub</span>
                     </a>

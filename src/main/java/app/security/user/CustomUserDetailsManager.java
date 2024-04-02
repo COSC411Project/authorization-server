@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 
 import app.entities.User;
+import app.enums.AuthProvider;
 import app.exceptions.EmailNotFoundException;
 import app.repositories.IUserRepository;
 
@@ -72,4 +73,17 @@ public class CustomUserDetailsManager implements UserDetailsManager {
 		return userRepository.findByEmail(email).isPresent();
 	}
 
+	public boolean userExists(String username, AuthProvider provider) {
+		Optional<User> savedUser = userRepository.findByUsernameAndAuthProvider(username, provider);
+		return savedUser.isPresent();
+	}
+
+	public SecurityUser loadUserByUsernameAndAuthProvider(String username, AuthProvider authProvider) {
+		Optional<User> savedUser = userRepository.findByUsernameAndAuthProvider(username, authProvider);
+		if (savedUser.isPresent()) {
+			return new SecurityUser(savedUser.get());
+		}
+		
+		return null;
+	}
 }

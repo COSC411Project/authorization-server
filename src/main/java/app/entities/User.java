@@ -1,7 +1,9 @@
 package app.entities;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
+import app.enums.AuthProvider;
 import app.enums.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,9 +18,14 @@ public class User {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	private String username;
 	private String email;
 	private String password;
 	private boolean enabled;
+	private LocalDate dateCreated;
+	
+	@Enumerated(value=EnumType.STRING)
+	private AuthProvider authProvider;
 	
 	@Enumerated(value=EnumType.STRING)
 	private Role role;
@@ -50,6 +57,14 @@ public class User {
 		this.id = id;
 	}
 	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -74,6 +89,22 @@ public class User {
 		this.enabled = enabled;
 	}
 
+	public LocalDate getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(LocalDate dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	public AuthProvider getAuthProvider() {
+		return authProvider;
+	}
+
+	public void setAuthProvider(AuthProvider authProvider) {
+		this.authProvider = authProvider;
+	}
+
 	public Role getRole() {
 		return role;
 	}
@@ -84,7 +115,7 @@ public class User {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, enabled, id, password, role);
+		return Objects.hash(authProvider, email, enabled, id, password, role, username);
 	}
 
 	@Override
@@ -96,8 +127,9 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return Objects.equals(email, other.email) && enabled == other.enabled && id == other.id
-				&& Objects.equals(password, other.password) && role == other.role;
+		return authProvider == other.authProvider && Objects.equals(email, other.email) && enabled == other.enabled
+				&& id == other.id && Objects.equals(password, other.password) && role == other.role
+				&& Objects.equals(username, other.username);
 	}
 
 }
