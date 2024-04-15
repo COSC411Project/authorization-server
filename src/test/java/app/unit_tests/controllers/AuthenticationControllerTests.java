@@ -1,13 +1,13 @@
 package app.unit_tests.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Base64;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +31,7 @@ public class AuthenticationControllerTests {
 	private IClientService clientService;
 	private AuthenticationController authenticationController;
 	private Authorization authorization;
+	private String authorizationHeader;
 	
 	@BeforeEach
 	public void setup() {
@@ -39,6 +40,9 @@ public class AuthenticationControllerTests {
 		authenticationController = new AuthenticationController(clientDetailsManager, clientService);
 	
 		authorization = new Authorization("client", "secret");
+		
+		String encodedCredentials = Base64.getEncoder().encodeToString("client:secret".getBytes());
+		authorizationHeader += "Basic " + encodedCredentials;
 	}
 	
 	@Test
@@ -103,6 +107,17 @@ public class AuthenticationControllerTests {
 	
 		// Assert
 		assertFalse(isValid);
+	}
+	
+	@Test
+	public void token_clientNotValid_exception() {
+		// Arrange
+		when(clientService.isValidClient(anyString(), anyString())).thenReturn(false);
+		
+		// Act and Assert
+		assertThrows(UnauthorizedException.class, () -> {
+			authenticationController.token(authorizationHeader, GrantType.AUTHORIZATION_CODE, "code", null, null, null);
+		});
 	}
 	
 	@Test
