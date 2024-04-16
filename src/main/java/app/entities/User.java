@@ -21,6 +21,9 @@ public class User {
 	private String username;
 	private String email;
 	private String password;
+	private String phone;
+	private String city;
+	private String state;
 	private boolean enabled;
 	private LocalDate dateCreated;
 	
@@ -80,6 +83,30 @@ public class User {
 	
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	public boolean isEnabled() {

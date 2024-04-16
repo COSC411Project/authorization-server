@@ -43,21 +43,4 @@ public class ClientController {
 		return new ResponseEntity<>(registeredClient, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/logged-in")
-	public ResponseEntity<LoggedInDTO> loggedIn(@RequestHeader(name="Authorization") String authorizationHeader, Authentication authentication) throws UnauthorizedException {
-		Authorization authorization = AuthorizationUtil.parseHeader(authorizationHeader);
-		if (!clientService.isValidClient(authorization.getClientId(), authorization.getClientSecret())) {
-			throw new UnauthorizedException();
-		}
-		
-		String clientId = authorization.getClientId();
-		Integer userId = (Integer) authentication.getPrincipal();
-		if (userId != null && clientService.latestTokenForUser(clientId, userId)) {
-			TokenDTO latestToken = clientService.getLatestToken(clientId);
-			LoggedInDTO loggedInDTO = new LoggedInDTO(latestToken);
-			return new ResponseEntity<>(loggedInDTO, HttpStatus.OK);
-		}
-		
-		return new ResponseEntity<>(new LoggedInDTO(),HttpStatus.OK);
-	}
 }

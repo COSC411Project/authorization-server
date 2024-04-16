@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.security.core.Authentication;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
-
 import app.dtos.ClientDTO;
 import app.dtos.ClientRegistrationDTO;
 import app.dtos.TokenDTO;

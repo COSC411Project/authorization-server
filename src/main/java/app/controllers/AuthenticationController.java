@@ -25,6 +25,9 @@ import app.security.client.IClientDetailsManager;
 import app.security.client.SecurityClient;
 import app.services.IClientService;
 import app.utils.AuthorizationUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/oauth2")
@@ -58,7 +61,7 @@ public class AuthenticationController {
 		
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Location", redirectUri);
-			
+		
 		return new ResponseEntity<>(headers, HttpStatus.FOUND);
 	}
 

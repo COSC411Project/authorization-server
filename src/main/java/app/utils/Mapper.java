@@ -4,7 +4,9 @@ import java.util.HashSet;
 
 import app.dtos.ClientDTO;
 import app.dtos.ClientRegistrationDTO;
+import app.dtos.UserDTO;
 import app.entities.Client;
+import app.entities.User;
 
 public class Mapper {
 	
@@ -38,6 +40,13 @@ public class Mapper {
 							 client.getScopes().stream().toList(),
 							 client.getRedirectUris().stream().toList(),
 							 client.getGrantTypes().stream().toList());
+	}
+	
+	public static UserDTO map(User user) {
+		return new UserDTO(user.getEmail(),
+						   user.getPhone(),
+						   user.getCity(),
+						   user.getState());
 	}
 	
 }
